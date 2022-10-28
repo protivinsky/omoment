@@ -66,6 +66,7 @@ class OMean(OBase):
         if isinstance(x, np.ndarray):
             x, w = self._mean_weight_of_np(x, w)
         self += OMean(x, w)
+        return self
 
     def __add__(self, other):
         if not isinstance(other, self.__class__):
@@ -86,12 +87,14 @@ class OMean(OBase):
         if self.weight == 0:
             self.mean = other.mean
             self.weight = other.weight
+            return self
         elif other.weight == 0:
-            pass
+            return self
         else:
             delta = other.mean - self.mean
             self.weight += other.weight
             self.mean += delta * other.weight / self.weight
+            return self
 
     def __nonzero__(self):
         return self.weight.__nonzero__()
@@ -100,6 +103,8 @@ class OMean(OBase):
     def of_frame(cls, data, x, w=None):
         res = cls()
         if w is None:
-            return res.update(data[x].values)
+            res.update(data[x].values)
+            return res
         else:
-            return res.update(data[x].values, w=data[w].values)
+            res.update(data[x].values, w=data[w].values)
+            return res

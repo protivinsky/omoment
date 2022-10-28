@@ -23,7 +23,7 @@ class OMeanVar(OMean):
 
     def _validate(self):
         OMean._validate(self)
-        if self.weight > 0 and (np.isnan(self.var) or np.isinf(self.var)):
+        if (self.weight > 0 and (np.isnan(self.var) or np.isinf(self.var))) or self.var < 0:
             raise ValueError('Invalid variance provided.')
 
     @staticmethod
@@ -63,6 +63,7 @@ class OMeanVar(OMean):
         else:
             other = OMeanVar(x, 0, w)
         self += other
+        return self
 
     def __add__(self, other):
         if not isinstance(other, self.__class__):
@@ -84,9 +85,12 @@ class OMeanVar(OMean):
         if not isinstance(other, self.__class__):
             raise ValueError(f'other has to be of class {self.__class__}!')
         if self.weight == 0:
-            return OMeanVar(other.mean, other.var, other.weight)
+            self.mean = other.mean
+            self.var = other.var
+            self.weight = other.weight
+            return self
         elif other.weight == 0:
-            return OMeanVar(self.mean, self.var, self.weight)
+            return self
         else:
             delta_mean = other.mean - self.mean
             delta_var = other.var - self.var
@@ -94,6 +98,7 @@ class OMeanVar(OMean):
             self.mean = self.mean + delta_mean * ratio
             self.var = self.var + delta_var * ratio + delta_mean ** 2 * ratio * (1 - ratio)
             self.weight = self.weight + other.weight
+            return self
 
     @property
     def std_dev(self):
