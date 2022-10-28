@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
+import math
 from omoment import OMean
 
 _inputs_equality = [
@@ -98,7 +99,24 @@ def test_random():
     actual = OMean(xarr, warr)
     expected = OMean(mean=99.08210157394731, weight=1006.9717003477731)
     assert OMean.is_close(actual, expected)
+    assert math.isclose(actual.mean, np.average(xarr, weights=warr))
+    assert math.isclose(actual.weight, np.sum(warr))
     df = pd.DataFrame({'x': xarr, 'w': warr})
     actual_of_frame = OMean.of_frame(data=df, x='x', w='w')
     assert OMean.is_close(actual_of_frame, expected)
+
+
+def test_handling_nans():
+    rng = np.random.Generator(np.random.PCG64(54321))
+    xarr = rng.normal(loc=100, scale=20, size=100)
+    warr = rng.normal(loc=10, scale=2, size=100)
+    xarr[xarr < 100] = np.nan
+    warr[warr < 10] = np.nan
+    actual = OMean(xarr, warr)
+    expected = OMean(mean=113.75735031907175, weight=272.7794894778689)
+    assert OMean.is_close(actual, expected)
+    with pytest.raises(ValueError):
+        actual.update(xarr, warr, raise_if_nans=True)
+
+
 

@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
+import math
 from omoment import OMeanVar
 
 _inputs_equality = [
@@ -92,18 +93,48 @@ def test_random1():
     assert OMeanVar.is_close(actual3, expected)
 
 
-def test_random2():
-    exp_loc1 = OMeanVar(mean=9.929017712742157, var=2207.1589602628806, weight=94)
-    exp_loc10 = OMeanVar(mean=96.87023647993738, var=2126.554880122452, weight=950)
-    exp_overall = OMeanVar(mean=69.33027298354546, var=2994.9736480692286, weight=5541)
+@pytest.fixture
+def df():
     rng = np.random.Generator(np.random.PCG64(99999))
     n = 1000
     g = rng.integers(low=1, high=11, size=n)
     x = 10 * g + rng.normal(loc=0, scale=50, size=n)
     df = pd.DataFrame({'g': g, 'x': x, 'w': g})
+    return df
+
+
+def test_random2(df):
+    exp_loc1 = OMeanVar(mean=9.929017712742157, var=2207.1589602628806, weight=94)
+    exp_loc10 = OMeanVar(mean=96.87023647993738, var=2126.554880122452, weight=950)
+    exp_overall = OMeanVar(mean=69.33027298354546, var=2994.9736480692286, weight=5541)
     omvs = df.groupby('g').apply(lambda inner: OMeanVar.of_frame(data=inner, x='x', w='w'))
     assert OMeanVar.is_close(omvs.loc[1], exp_loc1)
     assert OMeanVar.is_close(omvs.loc[10], exp_loc10)
     omv_overall = OMeanVar.combine(omvs)
     assert OMeanVar.is_close(omv_overall, exp_overall)
+
+
+def test_results(df):
+    omvs = df.groupby('g').apply(lambda inner: OMeanVar.of_frame(data=inner, x='x', w='w'))
+    omv_overall = OMeanVar.combine(omvs)
+    np_mean = np.average(df['x'], weights=df['w'])
+    assert math.isclose(omv_overall.mean, np_mean)
+    omvs2 = df.groupby('g').apply(lambda inner: OMeanVar.of_frame(data=inner, x='x'))
+    omv2_overall = OMeanVar.combine(omvs2)
+    np_std_dev = np.std(df['x'])
+    assert math.isclose(omv2_overall.std_dev, np_std_dev)
+
+
+def test_handling_nans():
+    rng = np.random.Generator(np.random.PCG64(54321))
+    xarr = rng.normal(loc=100, scale=20, size=100)
+    warr = rng.normal(loc=10, scale=2, size=100)
+    xarr[xarr < 100] = np.nan
+    warr[warr < 10] = np.nan
+    actual = OMeanVar(xarr, weight=warr)
+    expected = OMeanVar(mean=113.75735031907175, var=130.74635001488218, weight=272.7794894778689)
+    assert OMeanVar.is_close(actual, expected)
+    with pytest.raises(ValueError):
+        actual.update(xarr, warr, raise_if_nans=True)
+
 
