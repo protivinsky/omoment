@@ -1,23 +1,23 @@
+import typing
+import numbers
 import numpy as np
 import pandas as pd
-import typing
 from omoment import OBase
 
 
 class OMean(OBase):
     __slots__ = ['mean', 'weight']
 
-    def __init__(self, mean=np.nan, weight=0):
-        if isinstance(mean, float):
-            self.mean = mean
-            self.weight = weight
-            self._validate()
-        else:
-            self.mean = np.nan
-            self.weight = 0
-            if weight == 0:
-                weight = 1
-            self.update(mean, weight)
+    def __init__(self, mean=np.nan, weight=None):
+        mean = self._unwrap_if_possible(mean)
+        weight = self._unwrap_if_possible(weight)
+
+        if isinstance(mean, np.ndarray):
+            mean, weight = self._mean_weight_of_np(mean, weight)
+
+        self.mean = mean
+        self.weight = weight or 0
+        self._validate()
 
     def _validate(self):
         if self.weight < 0:
@@ -27,7 +27,32 @@ class OMean(OBase):
         elif self.weight > 0 and (np.isnan(self.mean) or np.isinf(self.mean)):
             raise ValueError('Invalid mean provided.')
 
-    def update(self, x, w=1, raise_if_nans=False):
+    @staticmethod
+    def _mean_weight_of_np(x, w=None, raise_if_nans=False):
+        # check if we have np.ndarray
+        if not isinstance(x, np.ndarray):
+            raise TypeError(f'x has to be a np.ndarray, it is {type(x)}.')
+        # more than 1-dimensional array, throw an exception
+        elif x.ndim > 1:
+            raise ValueError(f'Provided np.ndarray has to be 1-dimensional (x.ndim = {x.ndim}).')
+        # 1-dimensional array (0-dimensional should not be there, but it should not matter anyway
+        else:
+            if w is None:
+                invalid = np.isnan(x) | np.isinf(x)
+                if raise_if_nans and np.sum(invalid):
+                    raise ValueError('x or w contains invalid values (nan or infinity).')
+                return np.mean(x[~invalid]), np.sum(~invalid)
+            else:
+                if w.ndim > 1 or len(w) != len(x):
+                    raise ValueError('w has to have the same shape and size as x')
+                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w)
+                if raise_if_nans and np.sum(invalid):
+                    raise ValueError('x or w contains invalid values (nan or infinity).')
+                weight = np.sum(w[~invalid])
+                mean = np.average(x[~invalid], weights=w[~invalid])
+                return mean, weight
+
+    def update(self, x, w=None, raise_if_nans=False):
         """
         Update the moments by adding some values; NaNs are removed both from values and from weights.
 
@@ -36,39 +61,10 @@ class OMean(OBase):
             w (Union[float, np.ndarray, pd.Series]): Weights for new values. If provided, has to have the same length
             as x.
         """
-        if isinstance(x, pd.Series):
-            x = x.values
-        if isinstance(w, pd.Series):
-            w = w.values
+        x = self._unwrap_if_possible(x)
+        w = self._unwrap_if_possible(w)
         if isinstance(x, np.ndarray):
-            if x.size == 1:
-                x = float(x)
-                if isinstance(w, np.ndarray):
-                    if w.size != 1:
-                        raise ValueError(f'w (size={w.size}) has to have the same size as x (size={x.size})!')
-                    w = float(w)
-            elif x.ndim > 1:
-                raise ValueError(f'Provided np.ndarray has to be 1-dimensional (x.ndim = {x.ndim}).')
-            elif isinstance(w, np.ndarray):
-                if w.ndim > 1 or len(w) != len(x):
-                    raise ValueError('w has to have the same shape and size as x!')
-                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w)
-                if raise_if_nans and np.sum(invalid):
-                    raise ValueError('x or w contains invalid values (nan or infinity).')
-                weight = np.sum(w[~invalid])
-                mean = np.average(x[~invalid], w[~invalid])
-                self += OMean(mean, weight)
-                return
-            else:
-                if w != 1:
-                    raise ValueError(f'If x is np.ndarray, w has to be too and has to have the same size.')
-                invalid = np.isnan(x) | np.isinf(x)
-                if raise_if_nans and np.sum(invalid):
-                    raise ValueError('x or w contains invalid values (nan or infinity).')
-                weight = len(x[~invalid])
-                mean = x[~invalid].mean()
-                self += OMean(mean, weight)
-                return
+            x, w = self._mean_weight_of_np(x, w)
         self += OMean(x, w)
 
     def __add__(self, other):

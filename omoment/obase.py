@@ -27,7 +27,7 @@ class OBase(ABC):
         return all([self.__getattribute__(s) == other.__getattribute__(s) for s in self.__slots__])
 
     def is_close(self, other, rel_tol=1e-09, abs_tol=0.0):
-        return all([math.isclose(self.__getattribute__(s), other.__getattribute__(s), rel_tol, abs_tol)
+        return all([math.isclose(self.__getattribute__(s), other.__getattribute__(s), rel_tol=rel_tol, abs_tol=abs_tol)
                     for s in self.__slots__])
 
     def __repr__(self):
@@ -69,5 +69,13 @@ class OBase(ABC):
             if not (isinstance(first, cls) and isinstance(second, cls)):
                 raise TypeError(f'Both first and second arguments have to be instances of {cls}.')
             return first + second
+
+    @staticmethod
+    def _unwrap_if_possible(x):
+        if isinstance(x, pd.Series):
+            x = x.values
+        if isinstance(x, np.ndarray) and x.size == 1:
+            x = float(x)
+        return x
 
 
