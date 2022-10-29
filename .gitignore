@@ -113,6 +113,9 @@ venv.bak/
 # PyCharm project settings
 .idea
 
+# Sphinx documentation helper dir
+docs/.doctrees
+
 # Spyder project settings
 .spyderproject
 .spyproject

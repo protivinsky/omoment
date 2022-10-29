@@ -7,6 +7,9 @@ from omoment import OBase
 
 
 class OMean(OBase):
+    """
+    Online calculation of (weighted) mean.
+    """
     __slots__ = ['mean', 'weight']
 
     def __init__(self,
