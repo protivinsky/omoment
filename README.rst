@@ -1,3 +1,12 @@
+|pytest-badge| |doc-badge|
+
+..  |pytest-badge| image:: https://github.com/protivinsky/omoment/actions/workflows/pytest.yaml/badge.svg
+    :alt: pytest
+
+..  |doc-badge| image:: https://github.com/protivinsky/omoment/actions/workflows/builddoc.yaml/badge.svg
+    :alt: pytest
+    :target: https://protivinsky.github.io/omoment/index.html
+
 OMoment: Efficient online calculation of statistical moments
 ============================================================
 
