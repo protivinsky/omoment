@@ -68,7 +68,7 @@ class OMeanVar(OMean):
 
     def _validate(self):
         OMean._validate(self)
-        if (self.weight > 0 and (np.isnan(self.var) or np.isinf(self.var))) or self.var < 0:
+        if (self.weight > 1e-9 and (np.isnan(self.var) or np.isinf(self.var))) or self.var < -1e-9:
             raise ValueError('Invalid variance provided.')
 
     @staticmethod

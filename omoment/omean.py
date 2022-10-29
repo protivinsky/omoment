@@ -57,11 +57,11 @@ class OMean(OBase):
         self._validate()
 
     def _validate(self) -> None:
-        if self.weight < 0:
+        if self.weight < -1e-9:
             raise ValueError('Weight cannot be negative.')
         elif np.isnan(self.weight) | np.isinf(self.weight):
             raise ValueError('Invalid weight provided.')
-        elif self.weight > 0 and (np.isnan(self.mean) or np.isinf(self.mean)):
+        elif self.weight > 1e-9 and (np.isnan(self.mean) or np.isinf(self.mean)):
             raise ValueError('Invalid mean provided.')
 
     @staticmethod
