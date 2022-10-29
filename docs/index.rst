@@ -13,6 +13,10 @@ weight: Optional[Union[Number, ndarray, Series]] = None)**
 
    Online calculation of (weighted) mean.
 
+   Specifically, a Box represents the Cartesian product of n closed
+   intervals. Each interval has the form of one of [a, b], (-\infty,
+   b], [a, \infty), or (-\infty, \infty).
+
 **OMean.update(x: Union[Number, ndarray, Series], w:
 Optional[Union[Number, ndarray, Series]] = None, raise_if_nans: bool =
 False) -> `OMean <#omoment.OMean>`_**

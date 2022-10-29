@@ -2,7 +2,7 @@ from __future__ import annotations
 from numbers import Number
 import numpy as np
 import pandas as pd
-from typing import Optional, Union, Tuple
+from typing import Optional, Union, Tuple, List
 from omoment import OMean
 
 
@@ -122,3 +122,34 @@ class OMeanVar(OMean):
     def unbiased_std_dev(self) -> float:
         return np.sqrt(self.unbiased_var)
 
+    @staticmethod
+    def of_groupby(data: pd.DataFrame,
+                   g: Union[str, List[str]],
+                   x: str, w: Optional[str] = None,
+                   raise_if_nans: bool = False) -> pd.Series[OMean]:
+        """
+        Faster method for calculation over pandas DataFrame with large number of groups. Avoids using apply over
+        groups and calculates only necessary sums as it is faster.
+
+        On dataframe with 10_000_000 rows and 100_000 groups, this method is about 5x faster than using groupby and
+        apply workflow.
+        """
+        orig_len = len(data)
+        cols = (g if isinstance(g, list) else [g]) + ([x] if w is None else [x, w])
+        data = data[cols]
+        data = data[np.isfinite(data).all(1)].copy()
+        if raise_if_nans and len(data) < orig_len:
+            raise ValueError('x or w contains invalid values (nan or infinity).')
+        if w is None:
+            w = 'w'
+            data[w] = 1
+            data.rename(columns={x: '_xw'})
+            data['_xxw'] = data['_xw'] ** 2
+        else:
+            data['_xw'] = data[x] * data[w]
+            data['_xxw'] = data[x] ** 2 * data[w]
+        agg = data.groupby(g)[['_xw', '_xxw', w]].sum()
+        agg['mean'] = agg['_xw'] / agg[w]
+        agg['var'] = (agg['_xxw'] - agg['mean'] ** 2 * agg[w]) / agg[w]
+        res = agg.apply(lambda row: OMeanVar(row['mean'], row['var'], row[w]), axis=1)
+        return res

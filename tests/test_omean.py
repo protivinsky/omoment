@@ -119,4 +119,21 @@ def test_handling_nans():
         actual.update(xarr, warr, raise_if_nans=True)
 
 
+@pytest.fixture
+def df2():
+    rng = np.random.Generator(np.random.PCG64(99999))
+    n = 1000
+    g = rng.integers(low=0, high=10, size=n)
+    g2 = rng.integers(low=0, high=2, size=n)
+    x = 10 * g + (g2 + 1) * rng.normal(loc=0, scale=50, size=n)
+    w = rng.exponential(scale=1, size=n)
+    df = pd.DataFrame({'a': g, 'b': g2, 'c': x, 'd': w})
+    return df
+
+
+def test_of_groupby(df2):
+    oms1 = df2.groupby(['a', 'b']).apply(OMean.of_frame, x='c', w='d')
+    oms2 = OMean.of_groupby(df2, g=['a', 'b'], x='c', w='d')
+    for x, y in zip(oms1, oms2):
+        assert OMean.is_close(x, y)
 

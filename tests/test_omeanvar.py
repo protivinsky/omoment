@@ -115,11 +115,11 @@ def test_random2(df):
 
 
 def test_results(df):
-    omvs = df.groupby('g').apply(lambda inner: OMeanVar.of_frame(data=inner, x='x', w='w'))
+    omvs = df.groupby('g').apply(OMeanVar.of_frame, x='x', w='w')
     omv_overall = OMeanVar.combine(omvs)
     np_mean = np.average(df['x'], weights=df['w'])
     assert math.isclose(omv_overall.mean, np_mean)
-    omvs2 = df.groupby('g').apply(lambda inner: OMeanVar.of_frame(data=inner, x='x'))
+    omvs2 = df.groupby('g').apply(OMeanVar.of_frame, x='x')
     omv2_overall = OMeanVar.combine(omvs2)
     np_std_dev = np.std(df['x'])
     assert math.isclose(omv2_overall.std_dev, np_std_dev)
@@ -137,4 +137,22 @@ def test_handling_nans():
     with pytest.raises(ValueError):
         actual.update(xarr, warr, raise_if_nans=True)
 
+
+@pytest.fixture
+def df2():
+    rng = np.random.Generator(np.random.PCG64(99999))
+    n = 1000
+    g = rng.integers(low=0, high=10, size=n)
+    g2 = rng.integers(low=0, high=2, size=n)
+    x = 10 * g + (g2 + 1) * rng.normal(loc=0, scale=50, size=n)
+    w = rng.exponential(scale=1, size=n)
+    df = pd.DataFrame({'a': g, 'b': g2, 'c': x, 'd': w})
+    return df
+
+
+def test_of_groupby(df2):
+    omvs1 = df2.groupby(['a', 'b']).apply(OMeanVar.of_frame, x='c', w='d')
+    omvs2 = OMeanVar.of_groupby(df2, g=['a', 'b'], x='c', w='d')
+    for x, y in zip(omvs1, omvs2):
+        assert OMeanVar.is_close(x, y)
 

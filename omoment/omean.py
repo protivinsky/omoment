@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, List
 from numbers import Number
 import numpy as np
 import pandas as pd
@@ -7,8 +7,12 @@ from omoment import OBase
 
 
 class OMean(OBase):
-    """
+    r"""
     Online calculation of (weighted) mean.
+
+    Specifically, a Box represents the Cartesian product of n closed intervals.
+    Each interval has the form of one of :math:`[a, b]`, :math:`(-\infty, b]`,
+    :math:`[a, \infty)`, or :math:`(-\infty, \infty)`.
     """
     __slots__ = ['mean', 'weight']
 
@@ -112,11 +116,35 @@ class OMean(OBase):
         return self.weight.__nonzero__()
 
     @classmethod
-    def of_frame(cls, data: pd.DataFrame, x: str, w: Optional[str] = None) -> OMean:
+    def of_frame(cls, data: pd.DataFrame, x: str, w: Optional[str] = None, raise_if_nans: bool = False) -> OMean:
         res = cls()
         if w is None:
-            res.update(data[x].values)
+            res.update(data[x].values, raise_if_nans=raise_if_nans)
             return res
         else:
-            res.update(data[x].values, w=data[w].values)
+            res.update(data[x].values, w=data[w].values, raise_if_nans=raise_if_nans)
             return res
+
+    @staticmethod
+    def of_groupby(data: pd.DataFrame,
+                   g: Union[str, List[str]],
+                   x: str, w: Optional[str] = None,
+                   raise_if_nans: bool = False) -> pd.Series[OMean]:
+        orig_len = len(data)
+        cols = (g if isinstance(g, list) else [g]) + ([x] if w is None else [x, w])
+        data = data[cols]
+        data = data[np.isfinite(data).all(1)].copy()
+        if raise_if_nans and len(data) < orig_len:
+            raise ValueError('x or w contains invalid values (nan or infinity).')
+        if w is None:
+            w = 'w'
+            data[w] = 1
+            data.rename(columns={x: '_xw'})
+        else:
+            data['_xw'] = data[x] * data[w]
+        agg = data.groupby(g)[['_xw', w]].sum()
+        agg['mean'] = agg['_xw'] / agg[w]
+        res = agg.apply(lambda row: OMean(row['mean'], row[w]), axis=1)
+        return res
+
+
