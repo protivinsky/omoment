@@ -72,6 +72,9 @@ instance/
 doc/_build/
 doc/.buildinfo
 doc/.doctrees
+_build
+.buildinfo
+.doctrees
 
 # PyBuilder
 target/
