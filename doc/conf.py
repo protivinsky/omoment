@@ -32,7 +32,7 @@ extensions = [
 ]
 
 # templates_path = ['_templates']
-exclude_patterns = ['docs', 'venv', 'tests']
+exclude_patterns = []
 
 
 
@@ -47,5 +47,5 @@ html_context = {
     "github_user": "protivinsky",  # Username
     "github_repo": "omoment",  # Repo name
     "github_version": "main",  # Version
-    "conf_py_path": "/docs/",  # Path in the checkout to the docs root
+    "conf_py_path": "/doc/",  # Path in the checkout to the doc root
 }
