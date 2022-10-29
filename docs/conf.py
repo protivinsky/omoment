@@ -11,7 +11,7 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -27,6 +27,7 @@ release = '0.1.0'
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinxcontrib.restbuilder',
 ]
 
@@ -38,5 +39,13 @@ exclude_patterns = ['docs', 'venv', 'tests']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-# html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 # html_static_path = ['_static']
+
+html_context = {
+    "display_github": True,  # Integrate GitHub
+    "github_user": "protivinsky",  # Username
+    "github_repo": "omoment",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/docs/source/",  # Path in the checkout to the docs root
+}

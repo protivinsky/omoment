@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from __future__ import annotations
 from typing import Union, Optional, Tuple, List
 from numbers import Number
@@ -7,18 +9,43 @@ from omoment import OBase
 
 
 class OMean(OBase):
-    r"""
-    Online calculation of (weighted) mean.
+    r"""Online estimator of weighted mean.
 
-    Specifically, a Box represents the Cartesian product of n closed intervals.
-    Each interval has the form of one of :math:`[a, b]`, :math:`(-\infty, b]`,
-    :math:`[a, \infty)`, or :math:`(-\infty, \infty)`.
+    Represents mean and weight of a part of data. Two `OMean` objects can be added together to produce correct
+    estimates for larger dataset. Mean and weight are stored using `__slots__` to allow for lightweight objects that
+    can be used in large quantities even in pandas DataFrames.
+
+    Most methods are fairly permissive, allowing to work on numbers, numpy arrays or pandas DataFrames. By default,
+    invalid values are omitted from data (NaNs, infinities and negative weights).
+
+    Addition of :math:`\mathrm{OMean}(m_1, w_1)` and :math:`\mathrm{OMean}(m_2, w_2)` is calculated as:
+
+    .. math::
+        :nowrap:
+
+        \begin{gather*}
+        \delta = m_2 - m_1\\
+        w_N = w_1 + w_2\\
+        m_N = m_1 + \delta \frac{w_2}{w_N}
+        \end{gather*}
+
+    Where subscript N denotes the new values produced by the addition.
     """
+
     __slots__ = ['mean', 'weight']
 
     def __init__(self,
                  mean: Union[Number, np.ndarray, pd.Series] = np.nan,
                  weight: Optional[Union[Number, np.ndarray, pd.Series]] = None) -> OMean:
+        """Creates a representation of mean and weight of a part of data.
+
+        If mean and weight are numpy arrays or pandas Series, weighted mean and total weight are first calculated
+        from data.
+
+        Raises:
+            ValueError: if provided invalid values, such as negative weight or positive weight and infinite mean.
+
+        """
         mean = self._unwrap_if_possible(mean)
         weight = self._unwrap_if_possible(weight)
 
@@ -41,12 +68,15 @@ class OMean(OBase):
     def _mean_weight_of_np(x: np.ndarray,
                            w: Optional[np.ndarray] = None,
                            raise_if_nans: bool = False) -> Tuple[float, float]:
+        """
+        Helper function to calculate mean and weight from numpy arrays.
+        """
         # check if we have np.ndarray
         if not isinstance(x, np.ndarray):
             raise TypeError(f'x has to be a np.ndarray, it is {type(x)}.')
         # more than 1-dimensional array, throw an exception
         elif x.ndim > 1:
-            raise ValueError(f'Provided np.ndarray has to be 1-dimensional (x.ndim = {x.ndim}).')
+            raise TypeError(f'Provided np.ndarray has to be 1-dimensional (x.ndim = {x.ndim}).')
         # 1-dimensional array (0-dimensional should not be there, but it should not matter anyway
         else:
             if w is None:
@@ -57,7 +87,7 @@ class OMean(OBase):
             else:
                 if w.ndim > 1 or len(w) != len(x):
                     raise ValueError('w has to have the same shape and size as x')
-                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w)
+                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w) | (w < 0)
                 if raise_if_nans and np.sum(invalid):
                     raise ValueError('x or w contains invalid values (nan or infinity).')
                 weight = np.sum(w[~invalid])
@@ -68,14 +98,25 @@ class OMean(OBase):
                x: Union[Number, np.ndarray, pd.Series],
                w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
                raise_if_nans: bool = False) -> OMean:
-        """
-        Update the moments by adding some values; NaNs are removed both from values and from weights.
+        """Update the moments by adding new values.
+
+        Can be either single values or batch of data in numpy arrays. In the latter case, moments are first estimated
+        on the new data and the moments for old and new data are combined. Invalid values and negative weights are
+        omitted by default.
 
         Args:
-            x: Values to add to the estimator.
-            w: Weights for new values. If provided, has to have the same length
-            as x.
+            x: Values to add to the current estimate.
+            w: Weights for the values. If provided, has to have the same length as x.
             raise_if_nans: If true, raises an error if there are NaNs in data. Otherwise, they are silently removed.
+
+        Returns:
+            The same OMean object updated for the new data.
+
+        Raises:
+            ValueError: `if raise_if_nans` is True and there are invalid values (NaNs, infinities or negative weights)
+             in data.
+            TypeError: if values x or w have more than one dimension or if they are of different size.
+
         """
         x = self._unwrap_if_possible(x)
         w = self._unwrap_if_possible(w)
@@ -113,10 +154,26 @@ class OMean(OBase):
             return self
 
     def __nonzero__(self) -> bool:
+        """
+        OMean is zero if it has zero weight: it behaves as zero element under the addition.
+        """
         return self.weight.__nonzero__()
 
     @classmethod
     def of_frame(cls, data: pd.DataFrame, x: str, w: Optional[str] = None, raise_if_nans: bool = False) -> OMean:
+        """Convenient function for calculation OMean of pandas DataFrame.
+
+        Args:
+            data: input DataFrame
+            x: name of column with values to calculated mean of
+            w: name of column with weights (optional)
+            raise_if_nans: if False, the calculation silently omit invalid values (otherwise throw ValueError if there
+            are invalid values)
+
+        Returns:
+            OMean object
+
+        """
         res = cls()
         if w is None:
             res.update(data[x].values, raise_if_nans=raise_if_nans)
@@ -130,6 +187,23 @@ class OMean(OBase):
                    g: Union[str, List[str]],
                    x: str, w: Optional[str] = None,
                    raise_if_nans: bool = False) -> pd.Series[OMean]:
+        """Optimized version for calculation of means of **large number of groups** in data.
+
+        Avoids slower groupby -> apply workflow and uses optimized aggregation functions only. The function is about
+        4x faster on testing dataset with 10,000,000 rows and 100,000 groups.
+
+        Args:
+            data: input DataFrame
+            g: name of column containing group keys; can be also a list of multiple column names
+            x: name of column with values to calculated mean of
+            w: name of column with weights (optional)
+            raise_if_nans: if False, the calculation silently omit invalid values (otherwise throw ValueError if there
+            are invalid values)
+
+        Returns:
+            pandas Series indexed by group values g and containing estimated OMean objects
+
+        """
         orig_len = len(data)
         cols = (g if isinstance(g, list) else [g]) + ([x] if w is None else [x, w])
         data = data[cols]

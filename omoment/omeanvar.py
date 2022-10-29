@@ -7,12 +7,50 @@ from omoment import OMean
 
 
 class OMeanVar(OMean):
+    r"""Online estimator of weighted mean and variance.
+
+    Represents mean, variance and weight of a part of data. Two `OMeanVar` objects can be added together to produce
+    correct estimates for overall dataset. Mean, variance and weight are stored using `__slots__` to allow for
+    lightweight objects that can be used in large quantities even in pandas DataFrame (however they are still Python
+    objects, not numpy types).
+
+    Most methods are fairly permissive, allowing to work on numbers, numpy arrays or pandas DataFrames. By default,
+    invalid values are omitted from data (NaNs, infinities and negative weights). Variance in `OMeanVar` is based on
+    `ddof = 0`, in agreement with numpy `std` method.
+
+    Addition of :math:`\mathrm{OMeanVar}(m_1, v_1, w_1)` and :math:`\mathrm{OMeanVar}(m_2, v_2, w_2)` is calculated as:
+
+    .. math::
+        :nowrap:
+
+        \begin{gather*}
+        \delta_m = m_2 - m_1\\
+        \delta_v = v_2 - v_1\\
+        w_N = w_1 + w_2\\
+        r = \frac{w_2}{w_N}\\
+        m_N = m_1 + \delta_m \frac{w_2}{w_N}\\
+        v_N = v_1 + \delta_v r + \delta_m^2 r (1 - r)
+        \end{gather*}
+
+    Where subscript N denotes the new values produced by the addition.
+    """
+
     __slots__ = ['mean', 'var', 'weight']
 
     def __init__(self,
                  mean: Union[Number, np.ndarray, pd.Series] = np.nan,
                  var: Optional[Number] = None,
                  weight: Union[Number, np.ndarray, pd.Series] = None) -> OMeanVar:
+        """Creates a representation of mean, variance and weight of a part of data.
+
+        If mean and weight are numpy arrays or pandas Series, weighted mean, weighted variance and total weight are
+        first calculated from data. The calculated variance assumes zero degrees of freedom, `OMeanVar` has properties
+        `unbiased_var` and `unbiased_std_dev` based on dof = 1.
+
+        Raises:
+            ValueError: if provided invalid values, such as negative weight or positive weight and infinite mean.
+
+        """
         mean = self._unwrap_if_possible(mean)
         weight = self._unwrap_if_possible(weight)
 
@@ -35,6 +73,9 @@ class OMeanVar(OMean):
     def _mean_var_weight_of_np(x: np.ndarray,
                                w: Optional[np.ndarray] = None,
                                raise_if_nans: bool = False) -> Tuple[float, float, float]:
+        """
+        Helper function to calculate mean, variance and weight from numpy arrays.
+        """
         # check if we have np.ndarray
         if not isinstance(x, np.ndarray):
             raise TypeError(f'x has to be a np.ndarray, it is {type(x)}.')
@@ -54,7 +95,7 @@ class OMeanVar(OMean):
             else:
                 if w.ndim > 1 or len(w) != len(x):
                     raise ValueError('w has to have the same shape and size as x')
-                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w)
+                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w) | (w < 0)
                 if raise_if_nans and np.sum(invalid):
                     raise ValueError('x or w contains invalid values (nan or infinity).')
                 weight = np.sum(w[~invalid])
@@ -66,6 +107,26 @@ class OMeanVar(OMean):
                x: Union[Number, np.ndarray, pd.Series],
                w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
                raise_if_nans: bool = False) -> OMeanVar:
+        """Update the moments by adding new values.
+
+        Can be either single values or batch of data in numpy arrays. In the latter case, moments are first estimated
+        on the new data and the moments for old and new data are combined. Invalid values and negative weights are
+        omitted by default.
+
+        Args:
+            x: Values to add to the current estimate.
+            w: Weights for the values. If provided, has to have the same length as x.
+            raise_if_nans: If true, raises an error if there are NaNs in data. Otherwise, they are silently removed.
+
+        Returns:
+            The same OMeanVar object updated for the new data.
+
+        Raises:
+            ValueError: `if raise_if_nans` is True and there are invalid values (NaNs, infinities or negative weights)
+             in data.
+            TypeError: if values x or w have more than one dimension or if they are of different size.
+
+        """
         x = self._unwrap_if_possible(x)
         w = self._unwrap_if_possible(w)
         if isinstance(x, np.ndarray):
@@ -112,14 +173,22 @@ class OMeanVar(OMean):
 
     @property
     def std_dev(self) -> float:
+        r"""
+        Estimate of standard deviation, calculated as :math:`\sqrt{\mathrm{Var}}`. Based on ddof = 0, the same default
+        as in numpy `std` method.
+        """
         return np.sqrt(self.var)
 
     @property
     def unbiased_var(self) -> float:
+        """Estimate of unbiased variance based on ddof = 1 (suitable for unweighted data).
+        """
         return self.var * (self.weight / (self.weight - 1))
 
     @property
     def unbiased_std_dev(self) -> float:
+        """Estimate of unbiased standard deviation based on ddof = 1 (suitable for unweighted data).
+        """
         return np.sqrt(self.unbiased_var)
 
     @staticmethod
@@ -127,13 +196,23 @@ class OMeanVar(OMean):
                    g: Union[str, List[str]],
                    x: str, w: Optional[str] = None,
                    raise_if_nans: bool = False) -> pd.Series[OMean]:
-        """
-        Faster method for calculation over pandas DataFrame with large number of groups. Avoids using apply over
-        groups and calculates only necessary sums as it is faster.
+        """Optimized version for calculation of means of **large number of groups** in data.
 
-        On dataframe with 10_000_000 rows and 100_000 groups, this method is about 5x faster than using groupby and
-        apply workflow.
+        Avoids slower groupby -> apply workflow and uses optimized aggregation functions only. The function is about
+        5x faster on testing dataset with 10,000,000 rows and 100,000 groups.
+
+        Args:
+            data: input DataFrame
+            g: name of column containing group keys; can be also a list of multiple column names
+            x: name of column with values to calculated mean of
+            w: name of column with weights (optional)
+            raise_if_nans: if False, the calculation silently omit invalid values (otherwise throw ValueError if there
+            are invalid values)
+
+        Returns:
+            pandas Series indexed by group values g and containing estimated OMeanVar objects
         """
+
         orig_len = len(data)
         cols = (g if isinstance(g, list) else [g]) + ([x] if w is None else [x, w])
         data = data[cols]

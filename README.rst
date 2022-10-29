@@ -1,6 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
+OMoment: Efficient online calculation of statistical moments
+============================================================
+
 OMoment package calculates moments of statistical distributions (means and variance) in online or distributed settings.
 
 - Suitable for large data - works well with numpy and Pandas and in distributed setting.
@@ -46,25 +46,3 @@ At the moment, only univariate distributions are supported. Bivariate or even mu
 efficiently processed in a similar fashion, so the support for them might be added in the future. Moments of
 multivariate distributions would also allow for linear regression estimation and other statistical methods
 (such as PCA or regularized regression) to be calculated in a single pass through large distributed datasets.
-"""
-
-from .obase import OBase
-from .omean import OMean
-from .omeanvar import OMeanVar
-from os import path
-
-__all__ = ['OBase', 'OMean', 'OMeanVar']
-
-__author__ = 'Tomas Protivinsky'
-
-# Version. For each new release, the version number should be updated
-# in the file VERSION.
-try:
-    # If a VERSION file exists, use it!
-    with open(path.join(path.dirname(__file__), 'VERSION'),
-              encoding='utf-8') as infile:
-        __version__ = infile.read().strip()
-except NameError:
-    __version__ = 'unknown (running code interactively?)'
-except IOError as ex:
-    __version__ = "unknown (%s)" % ex
