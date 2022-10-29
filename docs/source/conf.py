@@ -11,11 +11,11 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import omoment
+from omoment import OBase, OMean, OMeanVar
 
 project = 'OMoment'
 copyright = '2022, Tomas Protivinsky'

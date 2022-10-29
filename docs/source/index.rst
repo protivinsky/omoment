@@ -15,4 +15,10 @@ A zde je nejaky text.
    :maxdepth: 2
    :caption: Contents:
 
-.. autoclass:: omoment.OMean
+.. autoclass:: OBase
+
+.. autoclass:: OMean
+
+.. automethod:: OMean.update
+
+.. autoclass:: OMeanVar
