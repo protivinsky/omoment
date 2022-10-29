@@ -23,7 +23,15 @@ _inputs_addition = [
     (OMean(0, 100), OMean(100, 100), OMean(50, 200)),
 ]
 
-_inputs_validation = [(1, -1), (5, np.inf), (np.nan, 10)]
+_inputs_validation = [
+    (1, -1, False),
+    (5, np.inf, False),
+    (np.nan, 10, False),
+    (np.inf, 0, True),
+    (0, 0, True),
+    (10, 0, True),
+    (0, 1, True),
+]
 
 # the OMeans are mutated during addition
 _inputs_combine = [tuple(y.copy() for y in x) for x in _inputs_addition]
@@ -69,10 +77,13 @@ def test_combine(first, second, expected):
     assert OMean.is_close(OMean.combine([first, second]), expected)
 
 
-@pytest.mark.parametrize('mean,weight', _inputs_validation)
-def test_validation(mean, weight):
-    with pytest.raises(ValueError):
+@pytest.mark.parametrize('mean,weight,valid', _inputs_validation)
+def test_validation(mean, weight, valid):
+    if valid:
         OMean(mean, weight)
+    else:
+        with pytest.raises(ValueError):
+            OMean(mean, weight)
 
 
 def test_update():

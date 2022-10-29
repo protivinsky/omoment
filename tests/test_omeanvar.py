@@ -23,7 +23,17 @@ _inputs_addition = [
     (OMeanVar(0, 5, 10), OMeanVar(10, 5, 10), OMeanVar(5, 30, 20)),
 ]
 
-_inputs_validation = [(0, 1, -1), (1, 1, np.nan), (5, np.inf, 10), (4, -1, 10), (np.inf, 10, 10)]
+_inputs_validation = [
+    (0, 1, -1, False),
+    (1, 1, np.nan, False),
+    (5, np.inf, 10, False),
+    (4, -1, 10, False),
+    (np.inf, 10, 10, False),
+    (0, 0, 1, True),
+    (10, 0, 10, True),
+    (0, 1, 1, True),
+    (np.inf, np.inf, 0, True),
+]
 
 # the OMeanVars are mutated during addition
 _inputs_combine = [tuple(y.copy() for y in x) for x in _inputs_addition]
@@ -60,10 +70,13 @@ def test_conversion(input):
     assert (c is not input), 'Copy is identical object as original.'
 
 
-@pytest.mark.parametrize('mean,var,weight', _inputs_validation)
-def test_validation(mean, var, weight):
-    with pytest.raises(ValueError):
+@pytest.mark.parametrize('mean,var,weight,valid', _inputs_validation)
+def test_validation(mean, var, weight, valid):
+    if valid:
         OMeanVar(mean, var, weight)
+    else:
+        with pytest.raises(ValueError):
+            OMeanVar(mean, var, weight)
 
 
 @pytest.mark.parametrize('first,second,expected', _inputs_addition)
