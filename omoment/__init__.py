@@ -3,7 +3,7 @@
 """
 OMoment package calculates moments of statistical distributions (means and variance) in online or distributed settings.
 
-- Suitable for large data - works well with numpy and Pandas and in distributed setting.
+- Suitable for large data – works well with numpy and Pandas and in distributed setting.
 - Moments calculated from different parts of data can be easily combined or updated for new data (supports addition
   of results).
 - Objects are lightweight, calculation is done in numpy if possible.
