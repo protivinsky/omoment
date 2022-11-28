@@ -24,17 +24,17 @@ _inputs_addition = [
 ]
 
 _inputs_validation = [
-    (0, 1, -1, False),
-    (1, 1, np.nan, False),
-    (5, np.inf, 10, False),
-    (4, -1, 10, False),
-    (np.inf, 10, 10, False),
-    (0, 0, 1, True),
-    (10, 0, 10, True),
-    (0, 1, 1, True),
-    (np.inf, np.inf, 0, True),
-    (1, None, None, True),
-    (1, None, 1, True),
+    ({'mean': 0, 'var': 1, 'weight': -1}, False),
+    ({'mean': 1, 'var': 1, 'weight': np.nan}, False),
+    ({'mean': 5, 'var': np.inf, 'weight': 10}, False),
+    ({'mean': 4, 'var': -1, 'weight': 10}, False),
+    ({'mean': np.inf, 'var': 10, 'weight': 10}, False),
+    ({'mean': 0, 'var': 0, 'weight': 1}, True),
+    ({'mean': 10, 'var': 0, 'weight': 10}, True),
+    ({'mean': 0, 'var': 1, 'weight': 1}, True),
+    ({'mean': np.inf, 'var': np.inf, 'weight': 0}, True),
+    ({'mean': 1}, True),
+    ({'mean': 1, 'weight': 1}, False),
 ]
 
 # the OMeanVars are mutated during addition
@@ -72,13 +72,13 @@ def test_conversion(input):
     assert (c is not input), 'Copy is identical object as original.'
 
 
-@pytest.mark.parametrize('mean,var,weight,valid', _inputs_validation)
-def test_validation(mean, var, weight, valid):
+@pytest.mark.parametrize('kwargs,valid', _inputs_validation)
+def test_validation(kwargs, valid):
     if valid:
-        OMeanVar(mean, var, weight, handling_invalid=HandlingInvalid.Raise)
+        OMeanVar(**kwargs, handling_invalid=HandlingInvalid.Raise)
     else:
         with pytest.raises(ValueError):
-            OMeanVar(mean, var, weight, handling_invalid=HandlingInvalid.Raise)
+            OMeanVar(**kwargs, handling_invalid=HandlingInvalid.Raise)
 
 
 @pytest.mark.parametrize('first,second,expected', _inputs_addition)
