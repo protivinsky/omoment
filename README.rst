@@ -4,7 +4,7 @@
     :alt: pytest
 
 ..  |doc-badge| image:: https://github.com/protivinsky/omoment/actions/workflows/builddoc.yaml/badge.svg
-    :alt: pytest
+    :alt: doc
     :target: https://protivinsky.github.io/omoment/index.html
 
 OMoment: Efficient online calculation of statistical moments
@@ -55,6 +55,11 @@ At the moment, only univariate distributions are supported. Bivariate or even mu
 efficiently processed in a similar fashion, so the support for them might be added in the future. Moments of
 multivariate distributions would also allow for linear regression estimation and other statistical methods
 (such as PCA or regularized regression) to be calculated in a single pass through large distributed datasets.
+
+Similar packages
+----------------
+
+
 
 Documentation
 -------------

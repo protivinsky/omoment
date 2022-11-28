@@ -4,7 +4,7 @@ requires = ["flit_core >=3.7.1"]
 
 [project]
 name = "omoment"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     { name = "Tomas Protivinsky", email = "tomas.protivinsky@gmail.com" },
 ]
@@ -42,10 +42,12 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 80"
+addopts = "--cov --cov-report html --cov-report term-missing --cov-fail-under 75"
 
 [tool.coverage.run]
 source = ["omoment"]
 
 [project.urls]
-Homepage = "https://protivinsky.github.io/omoment"
+Homepage = "https://github.com/protivinsky/omoment"
+Documentation = "https://protivinsky.github.io/omoment"
+

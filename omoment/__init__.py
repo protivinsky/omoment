@@ -51,8 +51,7 @@ multivariate distributions would also allow for linear regression estimation and
 from .obase import OBase, HandlingInvalid
 from .omean import OMean
 from .omeanvar import OMeanVar
-from os import path
 
 __all__ = ['OBase', 'OMean', 'OMeanVar', 'HandlingInvalid']
 __author__ = 'Tomas Protivinsky'
-__version__ = "0.1.0"
+__version__ = "0.1.1"

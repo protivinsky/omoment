@@ -33,6 +33,8 @@ _inputs_validation = [
     (10, 0, 10, True),
     (0, 1, 1, True),
     (np.inf, np.inf, 0, True),
+    (1, None, None, True),
+    (1, None, 1, True),
 ]
 
 # the OMeanVars are mutated during addition
