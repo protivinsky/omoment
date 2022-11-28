@@ -29,7 +29,7 @@ Basic example
     w = rng.exponential(scale=1, size=1000)
 
     # calculate overall moments
-    OMeanVar(x, weight=w)
+    OMeanVar.compute(x, w)
     # should give: OMeanVar(mean=4.6, var=108, weight=1.08e+03)
 
     # or calculate moments for every group
@@ -48,11 +48,11 @@ multivariate distributions would also allow for linear regression estimation and
 (such as PCA or regularized regression) to be calculated in a single pass through large distributed datasets.
 """
 
-from .obase import OBase
+from .obase import OBase, HandlingInvalid
 from .omean import OMean
 from .omeanvar import OMeanVar
 from os import path
 
-__all__ = ['OBase', 'OMean', 'OMeanVar']
+__all__ = ['OBase', 'OMean', 'OMeanVar', 'HandlingInvalid']
 __author__ = 'Tomas Protivinsky'
 __version__ = "0.1.0"

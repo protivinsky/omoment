@@ -7,6 +7,13 @@ import numpy as np
 import pandas as pd
 from typing import Union, Optional, Dict, Tuple, Iterable
 from abc import ABC, abstractmethod
+from enum import Enum
+
+
+class HandlingInvalid(str, Enum):
+    Drop = 'drop'
+    Keep = 'keep'
+    Raise = 'raise'
 
 
 class OBase(ABC):
@@ -26,26 +33,28 @@ class OBase(ABC):
     def update(self,
                x: Union[Number, np.ndarray, pd.Series],
                w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
-               raise_if_nans: bool = False) -> OBase:
+               handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> OBase:
         """
         Update the object based on new data. Subclasses have to implement how to aggregate the new data.
         """
         ...
 
-    @abstractmethod
-    def _validate(self) -> None:
+    @classmethod
+    def compute(cls, *args, **kwargs):
         """
-        Validation is a part of `__init__` functions of subclasses. Ensures that values are not NaNs or infinities
-        or that they are positive when they are supposed to be (variance or weight).
+        Shortcut for initialization of an empty object and its update based on data.
         """
-        ...
+        ob = cls()
+        ob.update(*args, **kwargs)
+        return ob
 
-    @abstractmethod
-    def __add__(self, other: OBase) -> OBase:
-        """
-        Addition of two objects. Produces a new object.
-        """
-        ...
+    # @abstractmethod
+    # def _validate(self) -> None:
+    #     """
+    #     Validation is a part of `__init__` functions of subclasses. Ensures that values are not NaNs or infinities
+    #     or that they are positive when they are supposed to be (variance or weight).
+    #     """
+    #     ...
 
     @abstractmethod
     def __iadd__(self, other: OBase) -> OBase:
@@ -53,6 +62,15 @@ class OBase(ABC):
         In-place addition, mutates the self object.
         """
         ...
+
+    def __add__(self, other: OBase) -> OBase:
+        """
+        Addition of two objects. Produces a new object.
+        """
+        ob = self.__class__()
+        ob += self
+        ob += other
+        return ob
 
     def __eq__(self, other: OBase) -> bool:
         """

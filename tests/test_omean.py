@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import pandas as pd
 import math
-from omoment import OMean
+from omoment import OMean, HandlingInvalid
 
 _inputs_equality = [
     (OMean(42, 7), OMean(42, 10), False),
@@ -80,10 +80,10 @@ def test_combine(first, second, expected):
 @pytest.mark.parametrize('mean,weight,valid', _inputs_validation)
 def test_validation(mean, weight, valid):
     if valid:
-        OMean(mean, weight)
+        OMean(mean, weight, handling_invalid=HandlingInvalid.Raise)
     else:
         with pytest.raises(ValueError):
-            OMean(mean, weight)
+            OMean(mean, weight, handling_invalid=HandlingInvalid.Raise)
 
 
 def test_update():
@@ -99,17 +99,14 @@ def test_update():
 def test_array():
     xarr = np.arange(1, 100)
     warr = np.arange(1, 100)
-    assert OMean.is_close(OMean(xarr, warr), OMean(mean=66.33333333333333, weight=4950))
-    om = OMean()
-    om.update(xarr, warr)
-    assert OMean.is_close(om, OMean(mean=66.33333333333333, weight=4950))
+    assert OMean.is_close(OMean.compute(xarr, warr), OMean(mean=66.33333333333333, weight=4950))
 
 
 def test_random():
     rng = np.random.Generator(np.random.PCG64(12345))
     xarr = rng.normal(loc=100, scale=20, size=100)
     warr = rng.normal(loc=10, scale=2, size=100)
-    actual = OMean(xarr, warr)
+    actual = OMean.compute(xarr, warr)
     expected = OMean(mean=99.08210157394731, weight=1006.9717003477731)
     assert OMean.is_close(actual, expected)
     assert math.isclose(actual.mean, np.average(xarr, weights=warr))
@@ -125,11 +122,11 @@ def test_handling_nans():
     warr = rng.normal(loc=10, scale=2, size=100)
     xarr[xarr < 100] = np.nan
     warr[warr < 10] = np.nan
-    actual = OMean(xarr, warr)
+    actual = OMean.compute(xarr, warr)
     expected = OMean(mean=113.75735031907175, weight=272.7794894778689)
     assert OMean.is_close(actual, expected)
     with pytest.raises(ValueError):
-        actual.update(xarr, warr, raise_if_nans=True)
+        actual.update(xarr, warr, handling_invalid=HandlingInvalid.Raise)
 
 
 @pytest.fixture

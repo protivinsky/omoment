@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import pandas as pd
 import math
-from omoment import OMeanVar
+from omoment import OMeanVar, HandlingInvalid
 
 _inputs_equality = [
     (OMeanVar(42, 10, 7), OMeanVar(42, 10, 20), False),
@@ -73,10 +73,10 @@ def test_conversion(input):
 @pytest.mark.parametrize('mean,var,weight,valid', _inputs_validation)
 def test_validation(mean, var, weight, valid):
     if valid:
-        OMeanVar(mean, var, weight)
+        OMeanVar(mean, var, weight, handling_invalid=HandlingInvalid.Raise)
     else:
         with pytest.raises(ValueError):
-            OMeanVar(mean, var, weight)
+            OMeanVar(mean, var, weight, handling_invalid=HandlingInvalid.Raise)
 
 
 @pytest.mark.parametrize('first,second,expected', _inputs_addition)
@@ -98,14 +98,12 @@ def test_random1():
     rng = np.random.Generator(np.random.PCG64(12345))
     xarr = rng.normal(loc=100, scale=20, size=100)
     warr = rng.normal(loc=10, scale=2, size=100)
-    actual1 = OMeanVar()
+    actual = OMeanVar.compute(xarr, warr)
     expected = OMeanVar(mean=99.08210157394731, var=344.8769032099984, weight=1006.9717003477731)
-    assert OMeanVar.is_close(actual1.update(xarr, warr), expected)
-    actual2 = OMeanVar(xarr, weight=warr)
-    assert OMeanVar.is_close(actual2, expected)
+    assert OMeanVar.is_close(actual, expected)
     df = pd.DataFrame({'x': xarr, 'w': warr})
-    actual3 = OMeanVar.of_frame(data=df, x='x', w='w')
-    assert OMeanVar.is_close(actual3, expected)
+    actual_df = OMeanVar.of_frame(data=df, x='x', w='w')
+    assert OMeanVar.is_close(actual_df, expected)
 
 
 @pytest.fixture
@@ -146,11 +144,11 @@ def test_handling_nans():
     warr = rng.normal(loc=10, scale=2, size=100)
     xarr[xarr < 100] = np.nan
     warr[warr < 10] = np.nan
-    actual = OMeanVar(xarr, weight=warr)
+    actual = OMeanVar.compute(xarr, warr)
     expected = OMeanVar(mean=113.75735031907175, var=130.74635001488218, weight=272.7794894778689)
     assert OMeanVar.is_close(actual, expected)
     with pytest.raises(ValueError):
-        actual.update(xarr, warr, raise_if_nans=True)
+        actual.update(xarr, warr, handling_invalid=HandlingInvalid.Raise)
 
 
 @pytest.fixture

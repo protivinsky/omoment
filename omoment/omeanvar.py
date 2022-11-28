@@ -5,7 +5,7 @@ from numbers import Number
 import numpy as np
 import pandas as pd
 from typing import Optional, Union, Tuple, List
-from omoment import OMean
+from omoment import OMean, HandlingInvalid
 
 
 class OMeanVar(OMean):
@@ -40,41 +40,78 @@ class OMeanVar(OMean):
     __slots__ = ['mean', 'var', 'weight']
 
     def __init__(self,
-                 mean: Union[Number, np.ndarray, pd.Series] = np.nan,
-                 var: Optional[Number] = None,
-                 weight: Union[Number, np.ndarray, pd.Series] = None) -> OMeanVar:
-        """Creates a representation of mean, variance and weight of a part of data.
-
-        If mean and weight are numpy arrays or pandas Series, weighted mean, weighted variance and total weight are
-        first calculated from data. The calculated variance assumes zero degrees of freedom, `OMeanVar` has properties
-        `unbiased_var` and `unbiased_std_dev` based on dof = 1.
+                 mean: Number = np.nan,
+                 var: Number = np.nan,
+                 weight: Number = 0,
+                 handling_invalid: HandlingInvalid = HandlingInvalid.Drop):
+        """Creates a representation of mean, variance and weight of a part of data. To estimate OMeanVar directly
+        from data, use OMeanVar.compute class method.
 
         Raises:
-            ValueError: if provided invalid values, such as negative weight or positive weight and infinite mean.
+            ValueError: if handling invalid is HandlingInvalid.Raise (or 'raise') and invalid values are provided
+             in the constructor (such as negative weight or positive weight and infinite mean).
 
         """
-        mean = self._unwrap_if_possible(mean)
-        weight = self._unwrap_if_possible(weight)
-
-        if isinstance(mean, np.ndarray):
-            if var is not None:
-                raise ValueError('var cannot be provided if mean is a np.ndarray.')
-            mean, var, weight = self._mean_var_weight_of_np(mean, weight)
-
+        if not (isinstance(mean, Number) and isinstance(var, Number) and isinstance(weight, Number)):
+            raise TypeError(f'Mean, var and weight have to be numbers in OMeanVar, provided type(mean) = '
+                            f'{type(mean).__name__}, type(var) = {type(var).__name__}, type(weight) = '
+                            f'{type(weight).__name__}.')
+        if weight and not (handling_invalid == HandlingInvalid.Keep):
+            if weight < 0 or not np.isfinite(weight):
+                if handling_invalid == HandlingInvalid.Raise:
+                    raise ValueError(f'Invalid weight in OMeanVar: weight = {weight}')
+                else:
+                    mean = np.nan
+                    var = np.nan
+                    weight = 0
+            elif weight > 0 and not (np.isfinite(mean) and np.isfinite(var) and (var > -1e-10)):
+                if handling_invalid == HandlingInvalid.Raise:
+                    raise ValueError(f'Invalid mean or var with positive weight in OMeanVar: mean = {mean}, '
+                                     f'var = {var}')
+                else:
+                    mean = np.nan
+                    var = np.nan
+                    weight = 0
         self.mean = mean
-        self.var = np.nan if var is None else var
-        self.weight = 0 if weight is None else weight
-        self._validate()
+        self.var = var
+        self.weight = weight
 
-    def _validate(self):
-        OMean._validate(self)
-        if (self.weight > 0 and (np.isnan(self.var) or np.isinf(self.var))) or self.var < -1e-12:
-            raise ValueError('Invalid variance provided.')
+    # def __init__(self,
+    #              mean: Union[Number, np.ndarray, pd.Series] = np.nan,
+    #              var: Optional[Number] = None,
+    #              weight: Union[Number, np.ndarray, pd.Series] = None) -> OMeanVar:
+    #     """Creates a representation of mean, variance and weight of a part of data.
+    #
+    #     If mean and weight are numpy arrays or pandas Series, weighted mean, weighted variance and total weight are
+    #     first calculated from data. The calculated variance assumes zero degrees of freedom, `OMeanVar` has properties
+    #     `unbiased_var` and `unbiased_std_dev` based on dof = 1.
+    #
+    #     Raises:
+    #         ValueError: if provided invalid values, such as negative weight or positive weight and infinite mean.
+    #
+    #     """
+    #     mean = self._unwrap_if_possible(mean)
+    #     weight = self._unwrap_if_possible(weight)
+    #
+    #     if isinstance(mean, np.ndarray):
+    #         if var is not None:
+    #             raise ValueError('var cannot be provided if mean is a np.ndarray.')
+    #         mean, var, weight = self._mean_var_weight_of_np(mean, weight)
+    #
+    #     self.mean = mean
+    #     self.var = np.nan if var is None else var
+    #     self.weight = 0 if weight is None else weight
+    #     self._validate()
+    #
+    # def _validate(self):
+    #     OMean._validate(self)
+    #     if (self.weight > 0 and (np.isnan(self.var) or np.isinf(self.var))) or self.var < -1e-12:
+    #         raise ValueError('Invalid variance provided.')
 
     @staticmethod
     def _mean_var_weight_of_np(x: np.ndarray,
                                w: Optional[np.ndarray] = None,
-                               raise_if_nans: bool = False) -> Tuple[float, float, float]:
+                               handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> Tuple[float, float, float]:
         """
         Helper function to calculate mean, variance and weight from numpy arrays.
         """
@@ -87,9 +124,12 @@ class OMeanVar(OMean):
         # 1-dimensional array (0-dimensional should not be here, but it could be handled)
         else:
             if w is None:
-                invalid = np.isnan(x) | np.isinf(x)
-                if raise_if_nans and np.sum(invalid):
-                    raise ValueError('x or w contains invalid values (nan or infinity).')
+                if handling_invalid == HandlingInvalid.Keep:
+                    invalid = np.full(len(x), fill_value=False)
+                else:
+                    invalid = ~np.isfinite(x)
+                    if handling_invalid == HandlingInvalid.Raise and np.sum(invalid):
+                        raise ValueError('x contains invalid values (nan or infinity).')
                 weight = np.sum(~invalid)
                 mean = np.mean(x[~invalid])
                 var = np.mean((x[~invalid] - mean) ** 2)
@@ -97,9 +137,12 @@ class OMeanVar(OMean):
             else:
                 if w.ndim > 1 or len(w) != len(x):
                     raise ValueError('w has to have the same shape and size as x')
-                invalid = np.isnan(x) | np.isinf(x) | np.isnan(w) | np.isinf(w) | (w < 0)
-                if raise_if_nans and np.sum(invalid):
-                    raise ValueError('x or w contains invalid values (nan or infinity).')
+                if handling_invalid == HandlingInvalid.Keep:
+                    invalid = np.full(len(x), fill_value=False)
+                else:
+                    invalid = ~np.isfinite(x) | ~np.isfinite(w) | (w < 0)
+                    if handling_invalid == HandlingInvalid.Raise and np.sum(invalid):
+                        raise ValueError('x contains invalid values (nan or infinity).')
                 weight = np.sum(w[~invalid])
                 mean = np.average(x[~invalid], weights=w[~invalid])
                 var = np.average((x[~invalid] - mean) ** 2, weights=w[~invalid])
@@ -108,17 +151,19 @@ class OMeanVar(OMean):
     def update(self,
                x: Union[Number, np.ndarray, pd.Series],
                w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
-               raise_if_nans: bool = False) -> OMeanVar:
+               handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> OMeanVar:
         """Update the moments by adding new values.
 
         Can be either single values or batch of data in numpy arrays. In the latter case, moments are first estimated
         on the new data and the moments for old and new data are combined. Invalid values and negative weights are
-        omitted by default.
+        omitted by default. The calculated variance assumes zero degrees of freedom, `OMeanVar` has properties
+        `unbiased_var` and `unbiased_std_dev` based on dof = 1.
 
         Args:
             x: Values to add to the current estimate.
             w: Weights for the values. If provided, has to have the same length as x.
-            raise_if_nans: If true, raises an error if there are NaNs in data. Otherwise, they are silently removed.
+            handling_invalid: How to handle invalid values in calculation ['drop', 'keep', 'raise'], default value
+             'drop'. Provided either as enum or its string representation.
 
         Returns:
             The same OMeanVar object updated for the new data.
@@ -132,27 +177,27 @@ class OMeanVar(OMean):
         x = self._unwrap_if_possible(x)
         w = self._unwrap_if_possible(w)
         if isinstance(x, np.ndarray):
-            other = OMeanVar(*self._mean_var_weight_of_np(x, w, raise_if_nans=raise_if_nans))
+            other = OMeanVar(*self._mean_var_weight_of_np(x, w, handling_invalid=handling_invalid))
         else:
-            other = OMeanVar(x, 0, w)
+            other = OMeanVar(x, 0, w, handling_invalid=handling_invalid)
         self += other
         return self
 
-    def __add__(self, other: OMeanVar) -> OMeanVar:
-        if not isinstance(other, self.__class__):
-            raise ValueError(f'other has to be of class {self.__class__}!')
-        if self.weight == 0:
-            return OMeanVar(other.mean, other.var, other.weight)
-        elif other.weight == 0:
-            return OMeanVar(self.mean, self.var, self.weight)
-        else:
-            delta_mean = other.mean - self.mean
-            delta_var = other.var - self.var
-            new_weight = self.weight + other.weight
-            ratio = other.weight / new_weight
-            new_mean = self.mean + delta_mean * ratio
-            new_var = self.var + delta_var * ratio + delta_mean ** 2 * ratio * (1 - ratio)
-            return OMeanVar(new_mean, new_var, new_weight)
+    # def __add__(self, other: OMeanVar) -> OMeanVar:
+    #     if not isinstance(other, self.__class__):
+    #         raise ValueError(f'other has to be of class {self.__class__}!')
+    #     if self.weight == 0:
+    #         return OMeanVar(other.mean, other.var, other.weight)
+    #     elif other.weight == 0:
+    #         return OMeanVar(self.mean, self.var, self.weight)
+    #     else:
+    #         delta_mean = other.mean - self.mean
+    #         delta_var = other.var - self.var
+    #         new_weight = self.weight + other.weight
+    #         ratio = other.weight / new_weight
+    #         new_mean = self.mean + delta_mean * ratio
+    #         new_var = self.var + delta_var * ratio + delta_mean ** 2 * ratio * (1 - ratio)
+    #         return OMeanVar(new_mean, new_var, new_weight)
 
     def __iadd__(self, other: OMeanVar) -> OMeanVar:
         if not isinstance(other, self.__class__):
@@ -197,7 +242,7 @@ class OMeanVar(OMean):
     def of_groupby(data: pd.DataFrame,
                    g: Union[str, List[str]],
                    x: str, w: Optional[str] = None,
-                   raise_if_nans: bool = False) -> pd.Series[OMean]:
+                   handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> pd.Series[OMean]:
         """Optimized version for calculation of means of **large number of groups** in data.
 
         Avoids slower groupby -> apply workflow and uses optimized aggregation functions only. The function is about
@@ -208,21 +253,23 @@ class OMeanVar(OMean):
             g: name of column containing group keys; can be also a list of multiple column names
             x: name of column with values to calculated mean of
             w: name of column with weights (optional)
-            raise_if_nans: if False, the calculation silently omit invalid values (otherwise throw ValueError if there
-            are invalid values)
+            handling_invalid: How to handle invalid values in calculation ['drop', 'keep', 'raise'], default value
+             'drop'. Provided either as enum or its string representation.
 
         Returns:
             pandas Series indexed by group values g and containing estimated OMeanVar objects
         """
-
         orig_len = len(data)
         cols = (g if isinstance(g, list) else [g]) + ([x] if w is None else [x, w])
         data = data[cols]
-        data = data[np.isfinite(data).all(1)].copy()
-        if raise_if_nans and len(data) < orig_len:
-            raise ValueError('x or w contains invalid values (nan or infinity).')
+        if handling_invalid == HandlingInvalid.Keep:
+            data = data.copy()
+        else:
+            data = data[np.isfinite(data).all(1)].copy()
+            if handling_invalid == HandlingInvalid.Raise and len(data) < orig_len:
+                raise ValueError('x or w contains invalid values (nan or infinity).')
         if w is None:
-            w = 'w'
+            w = '_w'
             data[w] = 1
             data.rename(columns={x: '_xw'})
             data['_xxw'] = data['_xw'] ** 2
