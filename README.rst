@@ -97,8 +97,6 @@ testing (admittedly I am not sure if I used cython support correctly).
 Gym
 ...
 
--  (or newer Gymnasium )
-
 `OpenAI Gym
 <https://github.com/openai/gym>`_ (or newly `Gymnasium
 <https://github.com/Farama-Foundation/Gymnasium>`_)
