@@ -4,13 +4,12 @@ requires = ["flit_core >=3.7.1"]
 
 [project]
 name = "omoment"
-version = "0.1.1"
 authors = [
     { name = "Tomas Protivinsky", email = "tomas.protivinsky@gmail.com" },
 ]
-description = "Estimates statistical moments in online or distributed settings."
 readme = "README.rst"
 requires-python = ">=3.7"
+dynamic = ["version", "description"]
 keywords = [
     "statistics",
     "mean",

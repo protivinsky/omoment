@@ -48,10 +48,10 @@ multivariate distributions would also allow for linear regression estimation and
 (such as PCA or regularized regression) to be calculated in a single pass through large distributed datasets.
 """
 
+from .version import VERSION as __version__
 from .obase import OBase, HandlingInvalid
 from .omean import OMean
 from .omeanvar import OMeanVar
 
 __all__ = ['OBase', 'OMean', 'OMeanVar', 'HandlingInvalid']
 __author__ = 'Tomas Protivinsky'
-__version__ = "0.1.1"
