@@ -66,7 +66,8 @@ I have not found a package that would satisfy this, even though similar packages
 RunStats
 ........
 
-`RunStats<https://grantjenks.com/docs/runstats/>`_ package calculates several moments of univariate distribution (including skewness and kurtosis)
+`RunStats
+<https://grantjenks.com/docs/runstats/>`_ package calculates several moments of univariate distribution (including skewness and kurtosis)
 and a few other statistics (min and max) and the results can be combined together. In addition, it provides Regression
 object for bivariate statistics. It does not support weights and the calculation was more than 100x slower in my
 testing (admittedly I am not sure if I used cython support correctly).
@@ -98,7 +99,9 @@ Gym
 
 -  (or newer Gymnasium )
 
-`OpenAI Gym<https://github.com/openai/gym>`_ (or newly `Gymnasium<https://github.com/Farama-Foundation/Gymnasium>`_)
+`OpenAI Gym
+<https://github.com/openai/gym>`_ (or newly `Gymnasium
+<https://github.com/Farama-Foundation/Gymnasium>`_)
 provides similar functionality as a part of its normalization of observations and rewards
 (in gym.wrappers.normalize.RunningMeanStd). The functionality is fairly limited as it was developed for a particular
 use case, but the calculation is fast and it is possible to compose the results. It does not support weights though.
