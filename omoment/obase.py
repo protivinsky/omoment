@@ -48,14 +48,6 @@ class OBase(ABC):
         ob.update(*args, **kwargs)
         return ob
 
-    # @abstractmethod
-    # def _validate(self) -> None:
-    #     """
-    #     Validation is a part of `__init__` functions of subclasses. Ensures that values are not NaNs or infinities
-    #     or that they are positive when they are supposed to be (variance or weight).
-    #     """
-    #     ...
-
     @abstractmethod
     def __iadd__(self, other: OBase) -> OBase:
         """

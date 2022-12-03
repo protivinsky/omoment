@@ -76,38 +76,6 @@ class OMeanVar(OMean):
         self.var = var
         self.weight = weight
 
-    # def __init__(self,
-    #              mean: Union[Number, np.ndarray, pd.Series] = np.nan,
-    #              var: Optional[Number] = None,
-    #              weight: Union[Number, np.ndarray, pd.Series] = None) -> OMeanVar:
-    #     """Creates a representation of mean, variance and weight of a part of data.
-    #
-    #     If mean and weight are numpy arrays or pandas Series, weighted mean, weighted variance and total weight are
-    #     first calculated from data. The calculated variance assumes zero degrees of freedom, `OMeanVar` has properties
-    #     `unbiased_var` and `unbiased_std_dev` based on dof = 1.
-    #
-    #     Raises:
-    #         ValueError: if provided invalid values, such as negative weight or positive weight and infinite mean.
-    #
-    #     """
-    #     mean = self._unwrap_if_possible(mean)
-    #     weight = self._unwrap_if_possible(weight)
-    #
-    #     if isinstance(mean, np.ndarray):
-    #         if var is not None:
-    #             raise ValueError('var cannot be provided if mean is a np.ndarray.')
-    #         mean, var, weight = self._mean_var_weight_of_np(mean, weight)
-    #
-    #     self.mean = mean
-    #     self.var = np.nan if var is None else var
-    #     self.weight = 0 if weight is None else weight
-    #     self._validate()
-    #
-    # def _validate(self):
-    #     OMean._validate(self)
-    #     if (self.weight > 0 and (np.isnan(self.var) or np.isinf(self.var))) or self.var < -1e-12:
-    #         raise ValueError('Invalid variance provided.')
-
     @staticmethod
     def _mean_var_weight_of_np(x: np.ndarray,
                                w: Optional[np.ndarray] = None,
@@ -182,22 +150,6 @@ class OMeanVar(OMean):
             other = OMeanVar(x, 0, w, handling_invalid=handling_invalid)
         self += other
         return self
-
-    # def __add__(self, other: OMeanVar) -> OMeanVar:
-    #     if not isinstance(other, self.__class__):
-    #         raise ValueError(f'other has to be of class {self.__class__}!')
-    #     if self.weight == 0:
-    #         return OMeanVar(other.mean, other.var, other.weight)
-    #     elif other.weight == 0:
-    #         return OMeanVar(self.mean, self.var, self.weight)
-    #     else:
-    #         delta_mean = other.mean - self.mean
-    #         delta_var = other.var - self.var
-    #         new_weight = self.weight + other.weight
-    #         ratio = other.weight / new_weight
-    #         new_mean = self.mean + delta_mean * ratio
-    #         new_var = self.var + delta_var * ratio + delta_mean ** 2 * ratio * (1 - ratio)
-    #         return OMeanVar(new_mean, new_var, new_weight)
 
     def __iadd__(self, other: OMeanVar) -> OMeanVar:
         if not isinstance(other, self.__class__):

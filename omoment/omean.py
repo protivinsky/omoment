@@ -65,36 +65,6 @@ class OMean(OBase):
         self.mean = mean
         self.weight = weight
 
-    # def __init__(self,
-    #              mean: Union[Number, np.ndarray, pd.Series] = np.nan,
-    #              weight: Optional[Union[Number, np.ndarray, pd.Series]] = None) -> OMean:
-    #     """Creates a representation of mean and weight of a part of data.
-    #
-    #     If mean and weight are numpy arrays or pandas Series, weighted mean and total weight are first calculated
-    #     from data.
-    #
-    #     Raises:
-    #         ValueError: if provided invalid values, such as negative weight or positive weight and infinite mean.
-    #
-    #     """
-    #     mean = self._unwrap_if_possible(mean)
-    #     weight = self._unwrap_if_possible(weight)
-    #
-    #     if isinstance(mean, np.ndarray):
-    #         mean, weight = self._mean_weight_of_np(mean, weight)
-    #
-    #     self.mean = mean
-    #     self.weight = 0 if weight is None else weight
-    #     self._validate()
-    #
-    # def _validate(self) -> None:
-    #     if self.weight < 0:
-    #         raise ValueError('Weight cannot be negative.')
-    #     elif np.isnan(self.weight) | np.isinf(self.weight):
-    #         raise ValueError('Invalid weight provided.')
-    #     elif self.weight > 0 and (np.isnan(self.mean) or np.isinf(self.mean)):
-    #         raise ValueError('Invalid mean provided.')
-
     @staticmethod
     def _mean_weight_of_np(x: np.ndarray,
                            w: Optional[np.ndarray] = None,
@@ -160,19 +130,6 @@ class OMean(OBase):
             x, w = self._mean_weight_of_np(x, w, handling_invalid=handling_invalid)
         self += OMean(x, w, handling_invalid=handling_invalid)
         return self
-
-    # def __add__(self, other: OMean) -> OMean:
-    #     if not isinstance(other, self.__class__):
-    #         raise ValueError(f'other has to be of class {self.__class__}!')
-    #     if self.weight == 0:
-    #         return OMean(other.mean, other.weight)
-    #     elif other.weight == 0:
-    #         return OMean(self.mean, self.weight)
-    #     else:
-    #         delta = other.mean - self.mean
-    #         new_weight = self.weight + other.weight
-    #         new_mean = self.mean + delta * other.weight / new_weight
-    #         return OMean(mean=new_mean, weight=new_weight)
 
     def __iadd__(self, other: OMean) -> OMean:
         if not isinstance(other, self.__class__):
