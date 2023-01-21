@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 0.1.3 (2023-01-21)
+--------------------------
+
+* Fix for `of_groupby` methods with no weights.
+* Added convenience methods for accessing members in lambda functions.
+
 Version 0.1.2 (2022-11-28)
 --------------------------
 

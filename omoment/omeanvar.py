@@ -223,7 +223,7 @@ class OMeanVar(OMean):
         if w is None:
             w = '_w'
             data[w] = 1
-            data.rename(columns={x: '_xw'})
+            data = data.rename(columns={x: '_xw'})
             data['_xxw'] = data['_xw'] ** 2
         else:
             data['_xw'] = data[x] * data[w]
@@ -233,3 +233,23 @@ class OMeanVar(OMean):
         agg['var'] = (agg['_xxw'] - agg['mean'] ** 2 * agg[w]) / agg[w]
         res = agg.apply(lambda row: OMeanVar(row['mean'], row['var'], row[w]), axis=1)
         return res
+
+    @staticmethod
+    def get_var(om: OMeanVar):
+        """Convenience function to be used as a lambda."""
+        return om.var
+
+    @staticmethod
+    def get_std_dev(om: OMeanVar):
+        """Convenience function to be used as a lambda."""
+        return om.std_dev
+
+    @staticmethod
+    def get_unbiased_var(om: OMeanVar):
+        """Convenience function to be used as a lambda."""
+        return om.unbiased_var
+
+    @staticmethod
+    def get_unbiased_std_dev(om: OMeanVar):
+        """Convenience function to be used as a lambda."""
+        return om.unbiased_std_dev

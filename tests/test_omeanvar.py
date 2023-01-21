@@ -37,6 +37,11 @@ _inputs_validation = [
     ({'mean': 1, 'weight': 1}, False),
 ]
 
+_inputs_getters = [
+    (OMeanVar(42, 16, 10), 42, 16, 10),
+    (OMeanVar(0, 1, 100), 0, 1, 100),
+]
+
 # the OMeanVars are mutated during addition
 _inputs_combine = [tuple(y.copy() for y in x) for x in _inputs_addition]
 
@@ -153,6 +158,16 @@ def test_handling_nans():
         actual.update(xarr, warr, handling_invalid=HandlingInvalid.Raise)
 
 
+@pytest.mark.parametrize('om,mean,var,weight', _inputs_getters)
+def test_get_mean_weight_var(om, mean, var, weight):
+    assert OMeanVar.get_mean(om) == mean
+    assert OMeanVar.get_var(om) == var
+    assert OMeanVar.get_weight(om) == weight
+    assert OMeanVar.get_std_dev(om) == om.std_dev
+    assert OMeanVar.get_unbiased_var(om) == om.unbiased_var
+    assert OMeanVar.get_unbiased_std_dev(om) == om.unbiased_std_dev
+
+
 @pytest.fixture
 def df2():
     rng = np.random.Generator(np.random.PCG64(99999))
@@ -166,6 +181,13 @@ def df2():
 
 
 def test_of_groupby(df2):
+    # no weights
+    omvs1 = df2.groupby(['a', 'b']).apply(OMeanVar.of_frame, x='c')
+    omvs2 = OMeanVar.of_groupby(df2, g=['a', 'b'], x='c')
+    for x, y in zip(omvs1, omvs2):
+        assert OMeanVar.is_close(x, y)
+
+    # with weights
     omvs1 = df2.groupby(['a', 'b']).apply(OMeanVar.of_frame, x='c', w='d')
     omvs2 = OMeanVar.of_groupby(df2, g=['a', 'b'], x='c', w='d')
     for x, y in zip(omvs1, omvs2):

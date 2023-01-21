@@ -33,6 +33,11 @@ _inputs_validation = [
     (0, 1, True),
 ]
 
+_inputs_getters = [
+    (OMean(42, 7), 42, 7),
+    (OMean(0, 100), 0, 100),
+]
+
 # the OMeans are mutated during addition
 _inputs_combine = [tuple(y.copy() for y in x) for x in _inputs_addition]
 
@@ -129,6 +134,12 @@ def test_handling_nans():
         actual.update(xarr, warr, handling_invalid=HandlingInvalid.Raise)
 
 
+@pytest.mark.parametrize('om,mean,weight', _inputs_getters)
+def test_get_mean_weight(om, mean, weight):
+    assert OMean.get_mean(om) == mean
+    assert OMean.get_weight(om) == weight
+
+
 @pytest.fixture
 def df2():
     rng = np.random.Generator(np.random.PCG64(99999))
@@ -142,6 +153,13 @@ def df2():
 
 
 def test_of_groupby(df2):
+    # no weights
+    oms1 = df2.groupby(['a', 'b']).apply(OMean.of_frame, x='c')
+    oms2 = OMean.of_groupby(df2, g=['a', 'b'], x='c')
+    for x, y in zip(oms1, oms2):
+        assert OMean.is_close(x, y)
+
+    # weights
     oms1 = df2.groupby(['a', 'b']).apply(OMean.of_frame, x='c', w='d')
     oms2 = OMean.of_groupby(df2, g=['a', 'b'], x='c', w='d')
     for x, y in zip(oms1, oms2):

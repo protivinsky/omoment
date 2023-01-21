@@ -207,7 +207,7 @@ class OMean(OBase):
         if w is None:
             w = '_w'
             data[w] = 1
-            data.rename(columns={x: '_xw'})
+            data = data.rename(columns={x: '_xw'})
         else:
             data['_xw'] = data[x] * data[w]
         agg = data.groupby(g)[['_xw', w]].sum()
@@ -215,4 +215,12 @@ class OMean(OBase):
         res = agg.apply(lambda row: OMean(row['mean'], row[w]), axis=1)
         return res
 
+    @staticmethod
+    def get_mean(om: OMean):
+        """Convenience function to be used as a lambda."""
+        return om.mean
 
+    @staticmethod
+    def get_weight(om: OMean):
+        """Convenience function to be used as a lambda."""
+        return om.weight
