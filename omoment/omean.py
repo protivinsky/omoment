@@ -155,7 +155,7 @@ class OMean(OBase):
     @classmethod
     def of_frame(cls, data: pd.DataFrame, x: str, w: Optional[str] = None,
                  handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> OMean:
-        """Convenient function for calculation OMean of pandas DataFrame.
+        """Convenience function for calculation OMean of pandas DataFrame.
 
         Args:
             data: input DataFrame
@@ -224,3 +224,13 @@ class OMean(OBase):
     def get_weight(om: OMean):
         """Convenience function to be used as a lambda."""
         return om.weight
+
+    # Explicit override to allow for intellisense
+    @classmethod
+    def compute(cls,
+                x: Union[Number, np.ndarray, pd.Series],
+                w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
+                handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> OMean:
+        om = cls()
+        om.update(x=x, w=w, handling_invalid=handling_invalid)
+        return om

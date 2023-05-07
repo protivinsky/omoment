@@ -253,3 +253,14 @@ class OMeanVar(OMean):
     def get_unbiased_std_dev(om: OMeanVar):
         """Convenience function to be used as a lambda."""
         return om.unbiased_std_dev
+
+    # Explicit override to allow for intellisense
+    @classmethod
+    def compute(cls,
+                x: Union[Number, np.ndarray, pd.Series],
+                w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
+                handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> OMeanVar:
+        omv = cls()
+        omv.update(x=x, w=w, handling_invalid=handling_invalid)
+        return omv
+

@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 0.1.4 (2023-05-07)
+--------------------------
+
+* Added `OReg` class for handling an univariate regression.
+* Added convenience method `of_frame` for quick computation of pandas dataframes.
+* Explicit `compute` override to play well with intellisense.
+
 Version 0.1.3 (2023-01-21)
 --------------------------
 

@@ -100,6 +100,7 @@ from .version import VERSION as __version__
 from .obase import OBase, HandlingInvalid
 from .omean import OMean
 from .omeanvar import OMeanVar
+from .oreg import OReg
 
-__all__ = ['OBase', 'OMean', 'OMeanVar', 'HandlingInvalid']
+__all__ = ['OBase', 'OMean', 'OMeanVar', 'OReg', 'HandlingInvalid']
 __author__ = 'Tomas Protivinsky'
