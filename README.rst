@@ -10,7 +10,8 @@
 OMoment: Efficient online calculation of statistical moments
 ============================================================
 
-OMoment package calculates moments of statistical distributions (mean and variance) in online or distributed settings.
+OMoment package calculates moments of statistical distributions (means, variances, covariance) in online or
+distributed settings for univariate and bivariate distributions.
 
 - Suitable for large data – works well with numpy and Pandas and in distributed setting.
 - Moments calculated from different parts of data can be easily combined or updated for new data (supports addition
@@ -19,9 +20,9 @@ OMoment package calculates moments of statistical distributions (mean and varian
 - Weights for data can be provided.
 - Invalid values (NaNs, infinities are omitted by default).
 
-Typical application is calculation of means and variances of many chunks of data (corresponding to different groups
-or to different parts of the distributed data), the results can be analyzed on level of the groups or easily
-combined to get exact moments for the full dataset.
+Typical application is calculation of means and variances (or even correlation of two variables) of many chunks of data
+(corresponding to different groups or to different parts of the distributed data), the results can be analyzed on level
+of the groups or easily combined to get exact moments for the full dataset.
 
 Basic example
 -------------
@@ -38,7 +39,7 @@ Basic example
     w = rng.exponential(scale=1, size=1000)
 
     # calculate overall moments
-    OMeanVar(x, weight=w)
+    OMeanVar.compute(x, w)
     # should give: OMeanVar(mean=4.6, var=108, weight=1.08e+03)
 
     # or calculate moments for every group
@@ -51,7 +52,8 @@ Basic example
     # addition is also supported
     omvs.loc[0] + omvs.loc[1]
 
-At the moment, only univariate distributions are supported. Bivariate or even multivariate distributions can be
+At the moment, univariate and bivariate distributions are supported. Bivariate distributions allow for fast linear
+regression with two variables (and constant) calculation. Even multivariate distributions can be
 efficiently processed in a similar fashion, so the support for them might be added in the future. Moments of
 multivariate distributions would also allow for linear regression estimation and other statistical methods
 (such as PCA or regularized regression) to be calculated in a single pass through large distributed datasets.
@@ -102,7 +104,7 @@ Gym
 <https://github.com/Farama-Foundation/Gymnasium>`_)
 provides similar functionality as a part of its normalization of observations and rewards
 (in gym.wrappers.normalize.RunningMeanStd). The functionality is fairly limited as it was developed for a particular
-use case, but the calculation is fast and it is possible to compose the results. It does not support weights though.
+use case, but the calculation is fast, and it is possible to compose the results. It does not support weights though.
 
 Documentation
 -------------
