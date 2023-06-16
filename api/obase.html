@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OBase &mdash; OMoment 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OMean" href="omean.html" />
+    <link rel="prev" title="OMoment: Efficient online calculation of statistical moments" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OMoment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OBase</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#omoment.OBase"><code class="docutils literal notranslate"><span class="pre">OBase</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.combine"><code class="docutils literal notranslate"><span class="pre">OBase.combine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.compute"><code class="docutils literal notranslate"><span class="pre">OBase.compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.copy"><code class="docutils literal notranslate"><span class="pre">OBase.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.is_close"><code class="docutils literal notranslate"><span class="pre">OBase.is_close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.of_dict"><code class="docutils literal notranslate"><span class="pre">OBase.of_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.of_tuple"><code class="docutils literal notranslate"><span class="pre">OBase.of_tuple()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.to_dict"><code class="docutils literal notranslate"><span class="pre">OBase.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.to_tuple"><code class="docutils literal notranslate"><span class="pre">OBase.to_tuple()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OBase.update"><code class="docutils literal notranslate"><span class="pre">OBase.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="omean.html">OMean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="omeanvar.html">OMeanVar</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ominmax.html">OMinMax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oreg.html">OReg</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OMoment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OBase</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/protivinsky/omoment/blob/main/doc/api/obase.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="obase">
+<h1>OBase<a class="headerlink" href="#obase" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="omoment.OBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omoment.</span></span><span class="sig-name descname"><span class="pre">OBase</span></span><a class="headerlink" href="#omoment.OBase" title="Permalink to this definition"></a></dt>
+<dd><p>Base class for moment calculating online estimators for univariate distributions.</p>
+<p>Provides basic functionality such as:</p>
+<ul class="simple">
+<li><p>equality and near-equality (for floats, <cite>is_close</cite>)</p></li>
+<li><p>string representation</p></li>
+<li><p>conversion objects to dictionaries or tuples (convenient for serialization)</p></li>
+<li><p>combination of objects via addition</p></li>
+<li><p>copying of objects</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.combine">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a></span></span><a class="headerlink" href="#omoment.OBase.combine" title="Permalink to this definition"></a></dt>
+<dd><p>Either combine two objects together or merge an iterable of objects. The logic for correct combination has
+to be implemented in <cite>__add__</cite> and <cite>__iadd__</cite> of subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.compute">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OBase.compute" title="Permalink to this definition"></a></dt>
+<dd><p>Shortcut for initialization of an empty object and its update based on data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a></span></span><a class="headerlink" href="#omoment.OBase.copy" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new object with identical values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.is_close">
+<span class="sig-name descname"><span class="pre">is_close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abs_tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#omoment.OBase.is_close" title="Permalink to this definition"></a></dt>
+<dd><p>Test of near equality: all values are compared with <cite>math.isclose</cite> and provided relative and absolute
+tolerance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.of_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">of_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Number</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a></span></span><a class="headerlink" href="#omoment.OBase.of_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Reconstruct the object from a dictionary (inverse of <cite>to_dict</cite> method).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.of_tuple">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">of_tuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Number</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a></span></span><a class="headerlink" href="#omoment.OBase.of_tuple" title="Permalink to this definition"></a></dt>
+<dd><p>Reconstruct the object from a tuple (inverse of <cite>to_tuple</cite> method).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Number</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#omoment.OBase.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the object to dictionary, attribute names are used as keys (for JSON serialization etc.).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.to_tuple">
+<span class="sig-name descname"><span class="pre">to_tuple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Number</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#omoment.OBase.to_tuple" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the values of attributes to a tuple.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OBase.update">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OBase" title="omoment.obase.OBase"><span class="pre">OBase</span></a></span></span><a class="headerlink" href="#omoment.OBase.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update the object based on new data. Subclasses have to implement how to aggregate the new data.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="OMoment: Efficient online calculation of statistical moments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="omean.html" class="btn btn-neutral float-right" title="OMean" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tomas Protivinsky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

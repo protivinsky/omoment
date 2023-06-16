@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMeanVar &mdash; OMoment 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OMinMax" href="ominmax.html" />
+    <link rel="prev" title="OMean" href="omean.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OMoment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="obase.html">OBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="omean.html">OMean</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OMeanVar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#omoment.OMeanVar"><code class="docutils literal notranslate"><span class="pre">OMeanVar</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.compute"><code class="docutils literal notranslate"><span class="pre">OMeanVar.compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.get_std_dev"><code class="docutils literal notranslate"><span class="pre">OMeanVar.get_std_dev()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.get_unbiased_std_dev"><code class="docutils literal notranslate"><span class="pre">OMeanVar.get_unbiased_std_dev()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.get_unbiased_var"><code class="docutils literal notranslate"><span class="pre">OMeanVar.get_unbiased_var()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.get_var"><code class="docutils literal notranslate"><span class="pre">OMeanVar.get_var()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.mean"><code class="docutils literal notranslate"><span class="pre">OMeanVar.mean</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.of_groupby"><code class="docutils literal notranslate"><span class="pre">OMeanVar.of_groupby()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.std_dev"><code class="docutils literal notranslate"><span class="pre">OMeanVar.std_dev</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.unbiased_std_dev"><code class="docutils literal notranslate"><span class="pre">OMeanVar.unbiased_std_dev</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.unbiased_var"><code class="docutils literal notranslate"><span class="pre">OMeanVar.unbiased_var</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.update"><code class="docutils literal notranslate"><span class="pre">OMeanVar.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.var"><code class="docutils literal notranslate"><span class="pre">OMeanVar.var</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMeanVar.weight"><code class="docutils literal notranslate"><span class="pre">OMeanVar.weight</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ominmax.html">OMinMax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oreg.html">OReg</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OMoment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OMeanVar</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/protivinsky/omoment/blob/main/doc/api/omeanvar.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="omeanvar">
+<h1>OMeanVar<a class="headerlink" href="#omeanvar" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="omoment.OMeanVar">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omoment.</span></span><span class="sig-name descname"><span class="pre">OMeanVar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">nan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMeanVar" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="omean.html#omoment.OMean" title="omoment.omean.OMean"><code class="xref py py-class docutils literal notranslate"><span class="pre">OMean</span></code></a></p>
+<p>Online estimator of weighted mean and variance.</p>
+<p>Represents mean, variance and weight of a part of data. Two <cite>OMeanVar</cite> objects can be added together to produce
+correct estimates for overall dataset. Mean, variance and weight are stored using <cite>__slots__</cite> to allow for
+lightweight objects that can be used in large quantities even in pandas DataFrame (however they are still Python
+objects, not numpy types).</p>
+<p>Most methods are fairly permissive, allowing to work on numbers, numpy arrays or pandas DataFrames. By default,
+invalid values are omitted from data (NaNs, infinities and negative weights). Variance in <cite>OMeanVar</cite> is based on
+<cite>ddof = 0</cite>, in agreement with numpy <cite>std</cite> method.</p>
+<p>Addition of <span class="math notranslate nohighlight">\(\mathrm{OMeanVar}(m_1, v_1, w_1)\)</span> and <span class="math notranslate nohighlight">\(\mathrm{OMeanVar}(m_2, v_2, w_2)\)</span> is calculated as:</p>
+<div class="math notranslate nohighlight">
+\begin{gather*}
+\delta_m = m_2 - m_1\\
+\delta_v = v_2 - v_1\\
+w_N = w_1 + w_2\\
+r = \frac{w_2}{w_N}\\
+m_N = m_1 + \delta_m \frac{w_2}{w_N}\\
+v_N = v_1 + \delta_v r + \delta_m^2 r (1 - r)
+\end{gather*}</div><p>Where subscript N denotes the new values produced by the addition.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.compute">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OMeanVar" title="omoment.omeanvar.OMeanVar"><span class="pre">OMeanVar</span></a></span></span><a class="headerlink" href="#omoment.OMeanVar.compute" title="Permalink to this definition"></a></dt>
+<dd><p>Shortcut for initialization of an empty object and its update based on data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.get_std_dev">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_std_dev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMeanVar" title="omoment.omeanvar.OMeanVar"><span class="pre">OMeanVar</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMeanVar.get_std_dev" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience function to be used as a lambda.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.get_unbiased_std_dev">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_unbiased_std_dev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMeanVar" title="omoment.omeanvar.OMeanVar"><span class="pre">OMeanVar</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMeanVar.get_unbiased_std_dev" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience function to be used as a lambda.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.get_unbiased_var">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_unbiased_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMeanVar" title="omoment.omeanvar.OMeanVar"><span class="pre">OMeanVar</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMeanVar.get_unbiased_var" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience function to be used as a lambda.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.get_var">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">om</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMeanVar" title="omoment.omeanvar.OMeanVar"><span class="pre">OMeanVar</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMeanVar.get_var" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience function to be used as a lambda.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omoment.OMeanVar.mean">
+<span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#omoment.OMeanVar.mean" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.of_groupby">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">of_groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.Series</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="omean.html#omoment.OMean" title="omoment.OMean"><span class="pre">OMean</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#omoment.OMeanVar.of_groupby" title="Permalink to this definition"></a></dt>
+<dd><p>Optimized version for calculation of means of <strong>large number of groups</strong> in data.</p>
+<p>Avoids slower groupby -&gt; apply workflow and uses optimized aggregation functions only. The function is about
+5x faster on testing dataset with 10,000,000 rows and 100,000 groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – input DataFrame</p></li>
+<li><p><strong>g</strong> – name of column containing group keys; can be also a list of multiple column names</p></li>
+<li><p><strong>x</strong> – name of column with values to calculated mean of</p></li>
+<li><p><strong>w</strong> – name of column with weights (optional)</p></li>
+<li><p><strong>handling_invalid</strong> – How to handle invalid values in calculation [‘drop’, ‘keep’, ‘raise’], default value
+‘drop’. Provided either as enum or its string representation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas Series indexed by group values g and containing estimated OMeanVar objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omoment.OMeanVar.std_dev">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#omoment.OMeanVar.std_dev" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate of standard deviation, calculated as <span class="math notranslate nohighlight">\(\sqrt{\mathrm{Var}}\)</span>. Based on ddof = 0, the same default
+as in numpy <cite>std</cite> method.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omoment.OMeanVar.unbiased_std_dev">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unbiased_std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#omoment.OMeanVar.unbiased_std_dev" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate of unbiased standard deviation based on ddof = 1 (suitable for unweighted data).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="omoment.OMeanVar.unbiased_var">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unbiased_var</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#omoment.OMeanVar.unbiased_var" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate of unbiased variance based on ddof = 1 (suitable for unweighted data).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMeanVar.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OMeanVar" title="omoment.omeanvar.OMeanVar"><span class="pre">OMeanVar</span></a></span></span><a class="headerlink" href="#omoment.OMeanVar.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update the moments by adding new values.</p>
+<p>Can be either single values or batch of data in numpy arrays. In the latter case, moments are first estimated
+on the new data and the moments for old and new data are combined. Invalid values and negative weights are
+omitted by default. The calculated variance assumes zero degrees of freedom, <cite>OMeanVar</cite> has properties
+<cite>unbiased_var</cite> and <cite>unbiased_std_dev</cite> based on dof = 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Values to add to the current estimate.</p></li>
+<li><p><strong>w</strong> – Weights for the values. If provided, has to have the same length as x.</p></li>
+<li><p><strong>handling_invalid</strong> – How to handle invalid values in calculation [‘drop’, ‘keep’, ‘raise’], default value
+‘drop’. Provided either as enum or its string representation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same OMeanVar object updated for the new data.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – <cite>if raise_if_nans</cite> is True and there are invalid values (NaNs, infinities or negative weights)
+    in data.</p></li>
+<li><p><strong>TypeError</strong> – if values x or w have more than one dimension or if they are of different size.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omoment.OMeanVar.var">
+<span class="sig-name descname"><span class="pre">var</span></span><a class="headerlink" href="#omoment.OMeanVar.var" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omoment.OMeanVar.weight">
+<span class="sig-name descname"><span class="pre">weight</span></span><a class="headerlink" href="#omoment.OMeanVar.weight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="omean.html" class="btn btn-neutral float-left" title="OMean" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ominmax.html" class="btn btn-neutral float-right" title="OMinMax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tomas Protivinsky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

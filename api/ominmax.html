@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMinMax &mdash; OMoment 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OReg" href="oreg.html" />
+    <link rel="prev" title="OMeanVar" href="omeanvar.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OMoment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="obase.html">OBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="omean.html">OMean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="omeanvar.html">OMeanVar</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OMinMax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#omoment.OMinMax"><code class="docutils literal notranslate"><span class="pre">OMinMax</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.compute"><code class="docutils literal notranslate"><span class="pre">OMinMax.compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.get_max"><code class="docutils literal notranslate"><span class="pre">OMinMax.get_max()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.get_min"><code class="docutils literal notranslate"><span class="pre">OMinMax.get_min()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.get_n"><code class="docutils literal notranslate"><span class="pre">OMinMax.get_n()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.max"><code class="docutils literal notranslate"><span class="pre">OMinMax.max</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.min"><code class="docutils literal notranslate"><span class="pre">OMinMax.min</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.n"><code class="docutils literal notranslate"><span class="pre">OMinMax.n</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.of_frame"><code class="docutils literal notranslate"><span class="pre">OMinMax.of_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.of_groupby"><code class="docutils literal notranslate"><span class="pre">OMinMax.of_groupby()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#omoment.OMinMax.update"><code class="docutils literal notranslate"><span class="pre">OMinMax.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="oreg.html">OReg</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OMoment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OMinMax</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/protivinsky/omoment/blob/main/doc/api/ominmax.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ominmax">
+<h1>OMinMax<a class="headerlink" href="#ominmax" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="omoment.OMinMax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">omoment.</span></span><span class="sig-name descname"><span class="pre">OMinMax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMinMax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="obase.html#omoment.OBase" title="omoment.obase.OBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">OBase</span></code></a></p>
+<p>Only estimator for minimum, maximum and number of points.</p>
+<p>Not really moments, but it is useful and shares the same interface. Does not use weights.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.compute">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OMinMax" title="omoment.ominmax.OMinMax"><span class="pre">OMinMax</span></a></span></span><a class="headerlink" href="#omoment.OMinMax.compute" title="Permalink to this definition"></a></dt>
+<dd><p>Shortcut for initialization of an empty object and its update based on data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.get_max">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMinMax" title="omoment.ominmax.OMinMax"><span class="pre">OMinMax</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMinMax.get_max" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience method to get the maximum value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.get_min">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMinMax" title="omoment.ominmax.OMinMax"><span class="pre">OMinMax</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMinMax.get_min" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience method to get the minimum value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.get_n">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#omoment.OMinMax" title="omoment.ominmax.OMinMax"><span class="pre">OMinMax</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#omoment.OMinMax.get_n" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience method to get the number of points.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omoment.OMinMax.max">
+<span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#omoment.OMinMax.max" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omoment.OMinMax.min">
+<span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#omoment.OMinMax.min" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="omoment.OMinMax.n">
+<span class="sig-name descname"><span class="pre">n</span></span><a class="headerlink" href="#omoment.OMinMax.n" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.of_frame">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">of_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OMinMax" title="omoment.ominmax.OMinMax"><span class="pre">OMinMax</span></a></span></span><a class="headerlink" href="#omoment.OMinMax.of_frame" title="Permalink to this definition"></a></dt>
+<dd><p>Create an OMinMax based on a dataframe and a column name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.of_groupby">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">of_groupby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pd.Series</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#omoment.OMinMax" title="omoment.OMinMax"><span class="pre">OMinMax</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#omoment.OMinMax.of_groupby" title="Permalink to this definition"></a></dt>
+<dd><p>Optimized version of OMinMax for large number of groups in data (so avoids costly <cite>df.groupby -&gt; apply</cite>).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="omoment.OMinMax.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handling_invalid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">HandlingInvalid</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">HandlingInvalid.Drop</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#omoment.OMinMax" title="omoment.ominmax.OMinMax"><span class="pre">OMinMax</span></a></span></span><a class="headerlink" href="#omoment.OMinMax.update" title="Permalink to this definition"></a></dt>
+<dd><p>Update the values based on new data, provided either as a single number or an array-like object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="omeanvar.html" class="btn btn-neutral float-left" title="OMeanVar" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oreg.html" class="btn btn-neutral float-right" title="OReg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tomas Protivinsky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

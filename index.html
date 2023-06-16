@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OMoment: Efficient online calculation of statistical moments &mdash; OMoment 0.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OBase" href="api/obase.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            OMoment
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/obase.html">OBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/omean.html">OMean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/omeanvar.html">OMeanVar</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ominmax.html">OMinMax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/oreg.html">OReg</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">OMoment</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OMoment: Efficient online calculation of statistical moments</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/protivinsky/omoment/blob/main/doc/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-omoment">
+<span id="omoment-efficient-online-calculation-of-statistical-moments"></span><h1>OMoment: Efficient online calculation of statistical moments<a class="headerlink" href="#module-omoment" title="Permalink to this heading"></a></h1>
+<p>OMoment package calculates moments of statistical distributions (means, variances, covariance) in online or
+distributed settings for univariate and bivariate distributions.</p>
+<ul class="simple">
+<li><p>Suitable for large data – works well with numpy and Pandas and in distributed setting.</p></li>
+<li><p>Moments calculated from different parts of data can be easily combined or updated for new data (supports addition
+of results).</p></li>
+<li><p>Objects are lightweight, calculation is done in numpy if possible.</p></li>
+<li><p>Weights for data can be provided.</p></li>
+<li><p>Invalid values (NaNs, infinities are omitted by default).</p></li>
+</ul>
+<p>Typical application is calculation of means and variances (or even correlation of two variables) of many chunks of data
+(corresponding to different groups or to different parts of the distributed data), the results can be analyzed on level
+of the groups or easily combined to get exact moments for the full dataset.</p>
+<section id="basic-example">
+<h2>Basic example<a class="headerlink" href="#basic-example" title="Permalink to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">omoment</span> <span class="kn">import</span> <span class="n">OMeanVar</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">12354</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">g</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># calculate overall moments</span>
+<span class="n">OMeanVar</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="c1"># should give: OMeanVar(mean=4.6, var=108, weight=1.08e+03)</span>
+
+<span class="c1"># or calculate moments for every group</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="n">g</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">:</span> <span class="n">w</span><span class="p">})</span>
+<span class="n">omvs</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">OMeanVar</span><span class="o">.</span><span class="n">of_frame</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+<span class="c1"># and combine group moments to obtain the same overall results</span>
+<span class="n">OMeanVar</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">omvs</span><span class="p">)</span>
+
+<span class="c1"># addition is also supported</span>
+<span class="n">omvs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">omvs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>At the moment, univariate and bivariate distributions are supported. Bivariate distributions allow for fast linear
+regression with two variables (and constant) calculation. Even multivariate distributions can be
+efficiently processed in a similar fashion, so the support for them might be added in the future. Moments of
+multivariate distributions would also allow for linear regression estimation and other statistical methods
+(such as PCA or regularized regression) to be calculated in a single pass through large distributed datasets.</p>
+</section>
+<section id="similar-packages">
+<h2>Similar packages<a class="headerlink" href="#similar-packages" title="Permalink to this heading"></a></h2>
+<p>OMoment package aims for fast calculation of weighted distribution moments (mean and variance at the moment),
+great compatibility with numpy and pandas and suitability for distributed datasets (composability of results).
+I have not found a package that would satisfy this, even though similar packages indeed exist.</p>
+<section id="runstats">
+<h3>RunStats<a class="headerlink" href="#runstats" title="Permalink to this heading"></a></h3>
+<p><a class="reference external" href="https://grantjenks.com/docs/runstats/">RunStats</a> package calculates several moments of univariate distribution (including skewness and kurtosis)
+and a few other statistics (min and max) and the results can be combined together. In addition, it provides Regression
+object for bivariate statistics. It does not support weights and the calculation was more than 100x slower in my
+testing (admittedly I am not sure if I used cython support correctly).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">omoment</span> <span class="kn">import</span> <span class="n">OMeanVar</span>
+<span class="kn">from</span> <span class="nn">runstats</span> <span class="kn">import</span> <span class="n">Statistics</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PCG64</span><span class="p">(</span><span class="mi">12345</span><span class="p">))</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">1_000_000</span><span class="p">)</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">omv</span> <span class="o">=</span> <span class="n">OMeanVar</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1"> seconds&#39;</span><span class="p">)</span>
+<span class="c1"># 0.0146 seconds</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">st</span> <span class="o">=</span> <span class="n">Statistics</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s1">.3g</span><span class="si">}</span><span class="s1"> seconds&#39;</span><span class="p">)</span>
+<span class="c1"># 2.83 seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="gym">
+<h3>Gym<a class="headerlink" href="#gym" title="Permalink to this heading"></a></h3>
+<p><a class="reference external" href="https://github.com/openai/gym">OpenAI Gym</a> (or newly <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium</a>)
+provides similar functionality as a part of its normalization of observations and rewards
+(in gym.wrappers.normalize.RunningMeanStd). The functionality is fairly limited as it was developed for a particular
+use case, but the calculation is fast, and it is possible to compose the results. It does not support weights though.</p>
+</section>
+</section>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/obase.html">OBase</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/omean.html">OMean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/omeanvar.html">OMeanVar</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ominmax.html">OMinMax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/oreg.html">OReg</a></li>
+</ul>
+</div>
+</section>
+<section id="index">
+<h1>Index<a class="headerlink" href="#index" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api/obase.html" class="btn btn-neutral float-right" title="OBase" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Tomas Protivinsky.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
