@@ -42,6 +42,7 @@ class OMean(OBase):
         from data, use OMean.compute class method.
 
         Raises:
+            TypeError: if mean or weight are not numbers.
             ValueError: if handling invalid is HandlingInvalid.Raise (or 'raise') and invalid values are provided
              in the constructor (such as negative weight or positive weight and infinite mean).
 

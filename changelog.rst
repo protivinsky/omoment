@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 0.1.5 (2023-06-16)
+--------------------------
+
+* Added `OMinMax` class for calculation of minimum, maximum and number of points.
+
 Version 0.1.4 (2023-05-07)
 --------------------------
 
