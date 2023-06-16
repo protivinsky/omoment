@@ -30,10 +30,7 @@ class OBase(ABC):
 
     """
     @abstractmethod
-    def update(self,
-               x: Union[Number, np.ndarray, pd.Series],
-               w: Optional[Union[Number, np.ndarray, pd.Series]] = None,
-               handling_invalid: HandlingInvalid = HandlingInvalid.Drop) -> OBase:
+    def update(self, x: Union[Number, np.ndarray, pd.Series], *args, **kwargs) -> OBase:
         """
         Update the object based on new data. Subclasses have to implement how to aggregate the new data.
         """

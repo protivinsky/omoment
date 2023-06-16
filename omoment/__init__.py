@@ -103,6 +103,7 @@ from .obase import OBase, HandlingInvalid
 from .omean import OMean
 from .omeanvar import OMeanVar
 from .oreg import OReg
+from .ominmax import OMinMax
 
-__all__ = ['OBase', 'OMean', 'OMeanVar', 'OReg', 'HandlingInvalid']
+__all__ = ['OBase', 'OMean', 'OMeanVar', 'OReg', 'OMinMax', 'HandlingInvalid']
 __author__ = 'Tomas Protivinsky'
